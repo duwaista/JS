@@ -1,5 +1,5 @@
 <template>
-  <h1>Шоб ты сдох</h1>
+  <h1>Hello hell</h1>
 </template>
 <script>
   export default {}
