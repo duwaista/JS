@@ -1,5 +1,7 @@
 <template>
-  <h1>Hello hell</h1>
+    <div>
+        <v-btn small>Button</v-btn>
+    </div>
 </template>
 <script>
   export default {}
