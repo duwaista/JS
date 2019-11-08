@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 // Pages
-import Authentication from '@/components/pages/Authentication'
+import Authentication from '@/views/Authentication'
 Vue.use(Router)
 export default new Router({
   routes: [
@@ -13,17 +13,17 @@ export default new Router({
     {
       path: '/login',
       name: 'Login',
-      component: () => import(/* webpackChunkName: "login" */ '@/components/pages/Login.vue')
+      component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue')
     },
     {
       path: '/root',
       name: 'Root',
-      component: () => import(/* webpackChunkName: "login" */ '@/components/pages/Root.vue')
+      component: () => import(/* webpackChunkName: "login" */ '@/views/Root.vue')
     },
     {
       path: '/bubu',
       name: 'Bubu',
-      component: () => import(/* webpackChunkName: "login" */ '@/components/pages/bubu.vue')
+      component: () => import(/* webpackChunkName: "login" */ '@/views/bubu.vue')
     }
   ]
 })
