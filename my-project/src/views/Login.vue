@@ -1,5 +1,5 @@
 <template>
-<div>
+<div align="center">
   <article v-for="(location, idx) in locations" :key="idx">
     <img :src="location.image">
     <h1>{{location.name}}</h1>
@@ -11,7 +11,7 @@
 <input v-model="image" placeholder="Location Image URL">
 <v-btn type="submit">Add New Location</v-btn>
 </form>
-
+<router-link to="/root" tag="v-btn">Root</router-link>
 </div>
 </template>
 
@@ -26,11 +26,11 @@
         image: ''
       }
     },
-    firestore(){
+    /*firestore(){
       return {
         locations: db.collection('locations').orderBy('createdAt')
       } 
-    },
+    },*/
     mounted() {
       //this.location.
     },
@@ -41,8 +41,11 @@
         this.locations.push({name, image, createdAt})
       },
       deleteLocation(id) {
-        db.collection('locations').doc(id).delete(),
-        this.locations.splice({name, image, createdAt})
+        db.collection('locations')
+        .doc(id)
+        .delete()
+        //this.locations.splice({name, image, createdAt})
+        this.$firestoreRefs.locations.doc(id).delete()
       }
     }
   }
