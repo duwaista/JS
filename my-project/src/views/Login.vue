@@ -1,6 +1,5 @@
 <template>
 <div>
-  <!--h2>{{ location.image }}</h2-->
   <article v-for="(location, idx) in locations" :key="idx">
     <img :src="location.image">
     <h1>{{location.name}}</h1>
@@ -24,21 +23,26 @@
       return{
         locations: [],
         name: '',
-        image: '',
+        image: ''
       }
     },
     firestore(){
       return {
-        locations: db.collections('locations').orderBy('createdAt')
+        locations: db.collection('locations').orderBy('createdAt')
       } 
+    },
+    mounted() {
+      //this.location.
     },
     methods:{
       addLocation(name, image) {
         const createdAt = new Date()
         db.collection('locations').add({name, image, createdAt})
+        this.locations.push({name, image, createdAt})
       },
       deleteLocation(id) {
-        db.collection('locations').doc(id).delete()
+        db.collection('locations').doc(id).delete(),
+        this.locations.splice({name, image, createdAt})
       }
     }
   }
