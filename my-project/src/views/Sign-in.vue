@@ -1,18 +1,17 @@
 <template>
+<div class="block-form">
 <form @submit.prevent="enterUser" class="sign-form">
   <div class="form-group">
-    <label for="email">Ваш логин:</label>
     <input v-model="user.email" type="email" id="email" class="form-control" placeholder="Login">
     </div>
     <div class="form-group">
-    <label for="password">Ваш пароль:</label>
     <input v-model="user.password" type="password" id="password" class="form-control" placeholder="Password" autocomplete="none">
     </div>
-    <v-btn small type="submit">Войти</v-btn>
+    <v-btn type="submit">Войти</v-btn>
     <div class="alert-sucess" role="alert" v-if="enterSucces">Успешно</div>
     <div class="alert-danger" role="alert" v-if="enterError">Упс! Что-то пошло не так</div>
 </form>
-  
+</div>
 </template>
 <script>
 export default {
@@ -31,13 +30,18 @@ export default {
       firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
       .then( response=> {
         this.enterSucces=true
+        this.enterError=false
         const sett = {
           email: response.email,
-          uid: response.uid
+          uid: response.uid,
+          complite: true,
+          mainPage: true
         }
+        //$emit(enterUser, sett)
       })
       .catch( ()=> {
         this.enterError=true
+        this.enterSucces=false
       })
     }
   }
@@ -45,22 +49,19 @@ export default {
 </script>
 <style>
 .sign-form{
-text-align: center
+text-align: center;
 }
 .alert-danger{
-  color: red
+  color: red;
+  font-size: 17px;
 }
 .alert-sucess{
-  color: green
+  color: green;
+  font-size: 17px;
 }
- /*.sign-form {
-    background-image: url('../assets/images/background.jpg');
-    height: 120%;
-    width: 100%;
-    top: 0;
-    left: 0;
-    position:absolute;
-    overflow:auto;
-    background-size: cover; 
-    }*/
+input{
+  width: 300px;
+  padding: 12px;
+}
+
 </style>

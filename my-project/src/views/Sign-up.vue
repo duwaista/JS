@@ -1,16 +1,16 @@
 <template>
   <form @submit.prevent="registerUser" autocomplete="none" class="sign-form">
     <div class="form-group">
-    <input v-model="user.email" type="email" id="email" class="form-control" placeholder="Login">
+    <input v-model="user.email" type="email" id="email" class="form-control" placeholder="Адрес почты">
     </div>
     <div class="form-group">
-    <input v-model="user.password" type="password" id="password" class="form-control" placeholder="Password" autocomplete="none">
+    <input v-model="user.password" type="password" id="password" class="form-control" placeholder="Пароль" autocomplete="none">
     </div>
     <div class="form-group">
-    <input v-model="user.confirmPassword" type="password" id="password2" class="form-control" placeholder="Replay Password" autocomplete="none">
+    <input v-model="user.confirmPassword" type="password" id="password2" class="form-control" placeholder="Повторите пароль" autocomplete="none">
     </div>
     <div class="alert-danger" role="alert" v-if="error">Пароли не совпадают или содержат менее 6 символов</div>
-    <v-btn type="submit">Add user</v-btn>
+    <v-btn type="submit">Регистрация</v-btn>
     <div class="alert-sucess" role="alert" v-if="succes">Успешно</div>
   </form>
 </template>
@@ -54,9 +54,15 @@ import { error } from 'util'
 text-align: center
 }
 .alert-danger{
-  color: red
+  color: red;
+  font-size: 17px;
 }
 .alert-sucess{
-  color: green
+  color: green;
+  font-size: 17px;
+}
+input{
+  width: 300px;
+  padding: 13px;
 }
 </style>
