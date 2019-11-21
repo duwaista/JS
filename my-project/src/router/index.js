@@ -4,9 +4,9 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/',
-      name: 'Authentication',
-      component: ()=> import('@/views/Authentication')
+      path: '/in',
+      name: 'Sign-in',
+      component: ()=> import('@/views/Sign-in')
     },
     {
       path: '/login',
@@ -14,14 +14,14 @@ export default new Router({
       component: () => import('@/views/Login.vue')
     },
     {
-      path: '/root',
+      path: '/',
       name: 'Root',
       component: () => import('@/views/Root.vue')
     },
     {
-      path: '/bubu',
-      name: 'Bubu',
-      component: () => import('@/views/bubu.vue')
+      path: '/up',
+      name: 'Sign-up',
+      component: () => import('@/views/Sign-up')
     }
   ]
 })

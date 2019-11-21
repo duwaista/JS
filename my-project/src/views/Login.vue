@@ -16,7 +16,7 @@
 </template>
 
 <script>
-  import {db} from '@/main'
+  //import {db} from '@/main'
   export default {
     name: 'Login',
     data () {

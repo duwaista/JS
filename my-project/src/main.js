@@ -5,14 +5,15 @@ import App from './App'
 import router from './router'
 import Vuetify from 'vuetify'
 import('../node_modules/vuetify/dist/vuetify.min.css')
-import firebase from 'firebase/app'
-import 'firebase/firestore'
+//import firebase from 'firebase/app'
+//import 'firebase/firestore'
+//import "firebase/auth"
 
-export const db = firebase.initializeApp({ 
+/*export const db = firebase.initializeApp({ 
 	apiKey: "AIzaSyBHXEKoASPtta_uQGwN2wb3UcXObF9GdZ8",
     authDomain: "web-project-f0b6b.firebaseapp.com",
 	projectId: 'web-project-f0b6b' })
-.firestore()
+.firestore()*/
 Vue.use(Vuetify)
 Vue.config.productionTip = false
 Vue.config.productionTip = false
@@ -22,7 +23,7 @@ new Vue({
   router,
   components: { App },
   template: '<App/>',
-
+/*
     data: () => ({ todos: [] }),
 
   created() {
@@ -89,6 +90,6 @@ new Vue({
       },
       onErrorHandler
     )
-  },
+  },*/
 })
 
