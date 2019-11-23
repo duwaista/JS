@@ -1,10 +1,9 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
 import router from './router'
 import Vuetify from 'vuetify'
 import('../node_modules/vuetify/dist/vuetify.min.css')
+import 'material-design-icons-iconfont/dist/material-design-icons.css'
 //import firebase from 'firebase/app'
 //import 'firebase/firestore'
 //import "firebase/auth"
@@ -15,6 +14,7 @@ import('../node_modules/vuetify/dist/vuetify.min.css')
 	projectId: 'web-project-f0b6b' })
 .firestore()*/
 Vue.use(Vuetify)
+const vuetifyOptions = { }
 Vue.config.productionTip = false
 Vue.config.productionTip = false
 
@@ -23,6 +23,7 @@ new Vue({
   router,
   components: { App },
   template: '<App/>',
+  vuetify: new Vuetify(vuetifyOptions),
 /*
     data: () => ({ todos: [] }),
 
@@ -91,5 +92,10 @@ new Vue({
       onErrorHandler
     )
   },*/
-})
-
+}),
+  new Vuetify({
+    icons: {
+      iconfont: 'mdi', // default - only for display purposes
+    },
+    dark: true
+  })

@@ -28,7 +28,7 @@ import { error } from 'util'
           confirmPassword: ''
         },
        error: false,
-       succes: false
+       succes: false,
       }
     },
 

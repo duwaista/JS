@@ -1,6 +1,6 @@
 <template>
 <div class="block-form">
-<form @submit.prevent="enterUser" class="sign-form">
+<v-form @submit.prevent="enterUser" class="sign-form">
   <div class="form-group">
     <input v-model="user.email" type="email" id="email" class="form-control" placeholder="Login">
     </div>
@@ -10,7 +10,8 @@
     <v-btn type="submit">Войти</v-btn>
     <div class="alert-sucess" role="alert" v-if="enterSucces">Успешно</div>
     <div class="alert-danger" role="alert" v-if="enterError">Упс! Что-то пошло не так</div>
-</form>
+    <v-btn class="rootButton" v-if="enterSucces" to="/">К главной</v-btn>
+</v-form>
 </div>
 </template>
 <script>
@@ -37,11 +38,13 @@ export default {
           complite: true,
           mainPage: true
         }
-        //$emit(enterUser, sett)
+        this.$emit('addUser', sett)
+        console.log(response)
       })
-      .catch( ()=> {
+      .catch( (Error)=> {
         this.enterError=true
         this.enterSucces=false
+        console.log(Error)
       })
     }
   }

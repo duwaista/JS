@@ -1,16 +1,214 @@
 <template>
-  <div>
-    <div class="SignIn">
-    <router-link to="/in" tag="v-btn">Войти</router-link>
-    </div>
-    <div class="SignUp">
-        <router-link to="/up" tag="v-btn">Регистрация</router-link>
-    </div>
-    <div class="btn-1">
-      
-    </div>
-  </div>
+<div>
+    <!--div v-if="sign==='sign-in'" @addUser="isMainPage=$event.mainPage, signComplite=$event.complite, email=$event.email, uid=$event.uid">
+    </div-->
+<div class="Header">
+    <v-app-bar flat dense position: fixed>
+      <template v-slote:activator>
+      <v-toolbar-title>
+        <v-btn icon>
+        <v-icon>mdi-menu</v-icon>
+        </v-btn>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-toolbar-items v-if="enterSucces">
+          <v-list-item>
+          {{user.email}}
+          </v-list-item>
+            <v-btn icon @click="enterSucces=false">
+                <v-icon alt="Выйти">mdi-logout</v-icon>
+            </v-btn>
+            <v-btn icon>
+              <v-icon>mdi-settings</v-icon>
+            </v-btn>
+        </v-toolbar-items>
+        <v-toolbar-items>
+            
+        </v-toolbar-items>
+      <v-toolbar-items v-if="!enterSucces">
+        <v-list>
+            <v-list-item>
+            </v-list-item>
+        </v-list>
+        <v-btn text to="/in">Sign-in</v-btn>
+        <v-btn text to="/up">Sign-up</v-btn>
+      </v-toolbar-items>
+      </template>
+    </v-app-bar>
+</div>
+
+<v-card flat height="36px">
+  <v-card-title></v-card-title>
+</v-card>
+
+<v-list
+    v-if="!enterSucces" 
+    position: absolute
+>
+    <v-list-group>
+        <template v-slot:activator>
+            <v-list-item>
+                <!--v-list-item-avatar>
+                    <img src="https://anivisual.net/avatar/01/86/32217419.jpg">
+                </v-list-item-avatar-->
+                <v-list-item-title>
+                    Вход
+                </v-list-item-title>
+                <v-list-item-content>
+                </v-list-item-content>
+            </v-list-item>
+        </template>
+    <v-list>
+        <template>
+            <v-list-item v-if="!enterSucces" ripple>
+                <v-list-item-content>
+                    <v-list-item-title>
+                        <v-form @submit.prevent="enterUser" class="sign-form">
+                            <div class="form-group">
+                                <input v-model="user.email" type="email" id="email" class="form-control" placeholder="Login">
+                            </div>
+                            <div class="form-group">
+                                <input v-model="user.password" type="password" id="password" class="form-control" placeholder="Password" autocomplete="none">
+                            </div>
+                            <v-btn type="submit">Войти</v-btn>
+                            <div class="alert-sucess" role="alert" v-if="enterSucces">Успешно</div>
+                            <div class="alert-danger" role="alert" v-if="enterError">Упс! Что-то пошло не так</div>
+                            <v-btn text class="rootButton" v-if="enterSucces" to="/">К главной</v-btn>
+                        </v-form>
+                    </v-list-item-title>
+                </v-list-item-content>
+            </v-list-item>
+        </template>
+    </v-list>
+</v-list-group>
+</v-list>
+
+<v-list
+    v-if="!enterSucces" 
+>
+<v-list-group>
+        <template v-slot:activator>
+            <v-list-item>
+                <v-list-item-title>
+                    Регистрация
+                </v-list-item-title>
+                <v-list-item-content>
+                </v-list-item-content>
+            </v-list-item>
+        </template>
+    <v-list>
+        <template>
+            <v-list-item ripple>
+                <v-list-item-content>
+                    <v-list-item-title>
+                        <template>
+                            <form @submit.prevent="registerUser" autocomplete="none" class="sign-form">
+                                <div class="form-group">
+                                    <input v-model="newUser.email" type="email" id="email" class="form-control" placeholder="Адрес почты">
+                                </div>
+                                <div class="form-group">
+                                    <input v-model="newUser.password" type="password" id="password" class="form-control" placeholder="Пароль" autocomplete="none">
+                                </div>
+                                <div class="form-group">
+                                    <input v-model="newUser.confirmPassword" type="password" id="password2" class="form-control" placeholder="Повторите пароль" autocomplete="none">
+                                </div>
+                                <div class="alert-danger" role="alert" v-if="error">Пароли не совпадают или содержат менее 6 символов</div>
+                                    <v-btn type="submit">Регистрация</v-btn>
+                                <div class="alert-sucess" role="alert" v-if="succes">Успешно</div>
+                            </form>
+                        </template>
+                    </v-list-item-title>
+                </v-list-item-content>
+            </v-list-item>
+        </template>
+    </v-list>
+</v-list-group>
+</v-list>
+
+<v-btn @click="enterSucces=true">Test</v-btn>
+</div>
 </template>
 <script>
-  export default {}
+import SignIn from "./Sign-in"
+import SignUp from "./Sign-up"
+  export default {
+      data () {
+          return {
+        user: {
+            email: '',
+            password: ''
+        },
+        newUser: {
+          email: '',
+          password: '',
+          confirmPassword: ''
+        },
+        enterSucces: false,
+        enterError: false,
+        error: false,
+        succes: false,
+        }
+      },
+
+methods: {
+    enterUser() {
+      firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
+      .then( response=> {
+        this.enterSucces=true
+        this.enterError=false
+        const sett = {
+          email: response.email,
+          uid: response.uid,
+          complite: true,
+          mainPage: true
+        }
+        this.$emit('addUser', sett)
+        console.log(response)
+      })
+      .catch( (Error)=> {
+        this.enterError=true
+        this.enterSucces=false
+        console.log(Error)
+      })
+    },
+    registerUser() {
+        if(this.newUser.password !== this.newUser.confirmPassword || this.newUser.password.length<6){
+          this.error=true
+          this.succes=false
+        }else{
+    firebase.auth().createUserWithEmailAndPassword(this.newUser.email, this.newUser.password)
+        .then( ()=> {
+          this.succes=true
+          this.error=false
+        })
+        .catch( error =>{
+        console.log(error)
+      })
+      }
+    }
+  }
+  }
 </script>
+<style>
+span{
+    color: black
+}
+body{
+    background-color: rgb(197, 197, 197)
+}
+.sign-form{
+text-align: center;
+}
+.alert-danger{
+  color: red;
+  font-size: 17px;
+}
+.alert-sucess{
+  color: green;
+  font-size: 17px;
+}
+input{
+  width: 300px;
+  padding: 16px;
+}
+</style>
