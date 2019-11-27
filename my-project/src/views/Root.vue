@@ -3,7 +3,7 @@
     <!--div v-if="sign==='sign-in'" @addUser="isMainPage=$event.mainPage, signComplite=$event.complite, email=$event.email, uid=$event.uid">
     </div-->
 <div class="Header">
-    <v-app-bar flat dense position: fixed>
+    <v-app-bar dark flat dense position: fixed>
       <template v-slote:activator>
       <v-toolbar-title>
         <v-btn icon>
@@ -16,7 +16,7 @@
           {{user.email}}
           </v-list-item>
             <v-btn icon @click="enterSucces=false">
-                <v-icon alt="Выйти">mdi-logout</v-icon>
+                <v-icon>mdi-logout</v-icon>
             </v-btn>
             <v-btn icon>
               <v-icon>mdi-settings</v-icon>
@@ -126,6 +126,15 @@
 </v-list>
 
 <v-btn @click="enterSucces=true">Test</v-btn>
+
+<form class="forShop">
+    <input type="text" class="shop-input" v-model="productInput" placeholder="Добавить">
+    <span class="shop-input-btn">
+        <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
+    </span>
+</form>
+<li v-for="(product, index) in product.products" :key="product" @click="removeProduct(index)">{{ product }}</li>
+
 </div>
 </template>
 <script>
@@ -136,7 +145,8 @@ import SignUp from "./Sign-up"
           return {
         user: {
             email: '',
-            password: ''
+            password: '',
+            uid: ''
         },
         newUser: {
           email: '',
@@ -147,6 +157,12 @@ import SignUp from "./Sign-up"
         enterError: false,
         error: false,
         succes: false,
+        productInput: '',
+        product: {
+            products: [],
+            uid: '',
+            email: ''
+        }
         }
       },
 
@@ -185,6 +201,19 @@ methods: {
         console.log(error)
       })
       }
+    },
+    addProduct() {
+        if(this.productInput !== ' ') {
+           this.product.products.push(this.productInput) 
+        }
+
+        //firebase.collection('users').add(this.uid, this.product.products[product])
+
+        this.productInput=' '
+    },
+    removeProduct(index) {
+        this.product.products.splice(index, 1)
+
     }
   }
   }
