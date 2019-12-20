@@ -15,6 +15,7 @@
 </div>
 </template>
 <script>
+import '@/components/style.css'
 export default {
   data () {
       return{
@@ -50,21 +51,3 @@ export default {
   }
 }
 </script>
-<style>
-.sign-form{
-text-align: center;
-}
-.alert-danger{
-  color: red;
-  font-size: 17px;
-}
-.alert-sucess{
-  color: green;
-  font-size: 17px;
-}
-input{
-  width: 300px;
-  padding: 12px;
-}
-
-</style>

@@ -3,7 +3,11 @@
     <!--div v-if="sign==='sign-in'" @addUser="isMainPage=$event.mainPage, signComplite=$event.complite, email=$event.email, uid=$event.uid">
     </div-->
 <div class="Header">
-    <v-app-bar dark flat dense position: fixed>
+    <v-app-bar
+    	dark
+    	flat
+    	dense
+    	position: fixed>
       <template v-slote:activator>
       <v-toolbar-title>
         <v-btn icon>
@@ -73,7 +77,6 @@
                             <v-btn type="submit">Войти</v-btn>
                             <div class="alert-sucess" role="alert" v-if="enterSucces">Успешно</div>
                             <div class="alert-danger" role="alert" v-if="enterError">Упс! Что-то пошло не так</div>
-                            <v-btn text class="rootButton" v-if="enterSucces" to="/">К главной</v-btn>
                         </v-form>
                     </v-list-item-title>
                 </v-list-item-content>
@@ -110,7 +113,7 @@
                                     <input v-model="newUser.password" type="password" id="password" class="form-control" placeholder="Пароль" autocomplete="none">
                                 </div>
                                 <div class="form-group">
-                                    <input v-model="newUser.confirmPassword" type="password" id="password2" class="form-control" placeholder="Повторите пароль" autocomplete="none">
+                                    <input v-model="newUser.confirmPassword" type="password" id="password2" class="form-control" placeholder="Повторите пароль" autocomplete="off">
                                 </div>
                                 <div class="alert-danger" role="alert" v-if="error">Пароли не совпадают или содержат менее 6 символов</div>
                                     <v-btn type="submit">Регистрация</v-btn>
@@ -133,13 +136,24 @@
         <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
     </span>
 </form>
-<li v-for="(product, index) in product.products" :key="product" @click="removeProduct(index)">{{ product }}</li>
+<v-card flat height="80px" v-for="(product, index) in product.products" :key="product" @click="removeProduct(index)">
+
+	<v-list-item>
+		<v-card-title>{{ product }}</v-card-title>
+	<v-list-avatar> 
+			<!--img src="https://sun9-10.userapi.com/c856020/v856020065/168bb9/G3wdJ-jdE8I.jpg"></img--></v-list-avatar>
+	</v-list-item>
+		
+	</v-img>
+</v-card>
+<div v-if="enterSucces">{{ user.uid }}</div>
 
 </div>
 </template>
 <script>
 import SignIn from "./Sign-in"
 import SignUp from "./Sign-up"
+import '@/components/style.css'
   export default {
       data () {
           return {
@@ -172,9 +186,11 @@ methods: {
       .then( response=> {
         this.enterSucces=true
         this.enterError=false
+        this.user.uid = response.user.uid
+        console.log(this.user.uid)
         const sett = {
-          email: response.email,
-          uid: response.uid,
+          email: response.user.email,
+          uid: response.user.uid,
           complite: true,
           mainPage: true
         }
@@ -192,6 +208,7 @@ methods: {
           this.error=true
           this.succes=false
         }else{
+
     firebase.auth().createUserWithEmailAndPassword(this.newUser.email, this.newUser.password)
         .then( ()=> {
           this.succes=true
@@ -202,12 +219,14 @@ methods: {
       })
       }
     },
+
+
     addProduct() {
         if(this.productInput !== ' ') {
            this.product.products.push(this.productInput) 
         }
 
-        //firebase.collection('users').add(this.uid, this.product.products[product])
+        //firebase.collection('users').add(this.user.uid, this.product.products[product])
 
         this.productInput=' '
     },
@@ -218,26 +237,3 @@ methods: {
   }
   }
 </script>
-<style>
-span{
-    color: black
-}
-body{
-    background-color: rgb(197, 197, 197)
-}
-.sign-form{
-text-align: center;
-}
-.alert-danger{
-  color: red;
-  font-size: 17px;
-}
-.alert-sucess{
-  color: green;
-  font-size: 17px;
-}
-input{
-  width: 300px;
-  padding: 16px;
-}
-</style>

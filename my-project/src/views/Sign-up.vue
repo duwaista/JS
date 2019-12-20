@@ -18,6 +18,7 @@
 <script>
 //import {db} from '@/main'
 import { error } from 'util'
+import '@/components/style.css'
   export default {
     name: 'sign-up',
     data () {
@@ -49,20 +50,3 @@ import { error } from 'util'
   }
   }
 </script>
-<style>
-.sign-form{
-text-align: center
-}
-.alert-danger{
-  color: red;
-  font-size: 17px;
-}
-.alert-sucess{
-  color: green;
-  font-size: 17px;
-}
-input{
-  width: 300px;
-  padding: 13px;
-}
-</style>
