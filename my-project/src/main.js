@@ -9,9 +9,9 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css'
 //import "firebase/auth"
 
 /*export const db = firebase.initializeApp({ 
-	apiKey: "AIzaSyBHXEKoASPtta_uQGwN2wb3UcXObF9GdZ8",
+  apiKey: "AIzaSyBHXEKoASPtta_uQGwN2wb3UcXObF9GdZ8",
     authDomain: "web-project-f0b6b.firebaseapp.com",
-	projectId: 'web-project-f0b6b' })
+  projectId: 'web-project-f0b6b' })
 .firestore()*/
 Vue.use(Vuetify)
 const vuetifyOptions = { }
@@ -26,7 +26,6 @@ new Vue({
   vuetify: new Vuetify(vuetifyOptions),
 /*
     data: () => ({ todos: [] }),
-
   created() {
     const todosRef = db.ref('todos')
     // setup adding childs and save the callback to remove it later
@@ -46,7 +45,6 @@ new Vue({
       // we are omitting this function for simplicity reasons
       onErrorHandler
     )
-
     // do the same for items being removed
     this.todosRef.on(
       'child_removed',
@@ -56,7 +54,6 @@ new Vue({
       },
       onErrorHandler
     )
-
     // do the same for items being modified
     this.todosRef.on(
       'child_changed',
@@ -70,7 +67,6 @@ new Vue({
       },
       onErrorHandler
     )
-
     // and last but not least handle elements being moved
     // this is useful when ordering items
     this.todosRef.on(

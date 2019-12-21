@@ -15,7 +15,7 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
     <script>
-    var firebaseConfig = { 
+    /*var firebaseConfig = { 
       apiKey: "AIzaSyBHXEKoASPtta_uQGwN2wb3UcXObF9GdZ8", 
       authDomain: "web-project-f0b6b.firebaseapp.com", 
       databaseURL: "https://web-project-f0b6b.firebaseio.com", 
@@ -23,9 +23,18 @@
       storageBucket: "web-project-f0b6b.appspot.com", 
       messagingSenderId: "269806446879", 
       appId: "1:269806446879:web:5399f33f03fe8e0df9682a" 
-      }; 
-      firebase.initializeApp(firebaseConfig); 
-      var database = firebase.database();
+      };*/ 
+      const db = firebase.initializeApp({ 
+      apiKey: "AIzaSyBHXEKoASPtta_uQGwN2wb3UcXObF9GdZ8", 
+      authDomain: "web-project-f0b6b.firebaseapp.com", 
+      databaseURL: "https://web-project-f0b6b.firebaseio.com", 
+      projectId: "web-project-f0b6b", 
+      storageBucket: "web-project-f0b6b.appspot.com", 
+      messagingSenderId: "269806446879", 
+      appId: "1:269806446879:web:5399f33f03fe8e0df9682a" 
+      }); 
+      //const fb = firebase.firestore();
+      //var database = firebase.database();
     </script>
   </body>
 </html>

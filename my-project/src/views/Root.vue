@@ -130,29 +130,33 @@
 
 <v-btn @click="enterSucces=true">Test</v-btn>
 
+<div class="userShop" v-if="enterSucces" >
 <form class="forShop">
     <input type="text" class="shop-input" v-model="productInput" placeholder="Добавить">
     <span class="shop-input-btn">
         <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
     </span>
 </form>
-<v-card flat height="80px" v-for="(product, index) in product.products" :key="product" @click="removeProduct(index)">
+<v-card flat height="80px" v-for="(product, index) in userProduct.products" :key="product" @click="removeProduct(index)">
 
 	<v-list-item>
-		<v-card-title>{{ product }}</v-card-title>
-	<v-list-avatar> 
-			<!--img src="https://sun9-10.userapi.com/c856020/v856020065/168bb9/G3wdJ-jdE8I.jpg"></img--></v-list-avatar>
+
+	<v-list-item-avatar> 
+			<img src="https://sun9-10.userapi.com/c856020/v856020065/168bb9/G3wdJ-jdE8I.jpg">
+	</v-list-item-avatar>
+	<v-card-title>{{ product }}</v-card-title>
+	
 	</v-list-item>
 		
-	</v-img>
 </v-card>
+</div>
 <div v-if="enterSucces">{{ user.uid }}</div>
 
 </div>
 </template>
 <script>
-import SignIn from "./Sign-in"
-import SignUp from "./Sign-up"
+//import SignIn from "./Sign-in"
+//import SignUp from "./Sign-up"
 import '@/components/style.css'
   export default {
       data () {
@@ -172,7 +176,8 @@ import '@/components/style.css'
         error: false,
         succes: false,
         productInput: '',
-        product: {
+
+        userProduct: {
             products: [],
             uid: '',
             email: ''
@@ -187,6 +192,8 @@ methods: {
         this.enterSucces=true
         this.enterError=false
         this.user.uid = response.user.uid
+        this.userProduct.uid = response.user.uid
+        this.userProduct.email = response.user.email
         console.log(this.user.uid)
         const sett = {
           email: response.user.email,
@@ -221,19 +228,57 @@ methods: {
     },
 
 
-    addProduct() {
+    addProduct(uid, product) {
         if(this.productInput !== ' ') {
-           this.product.products.push(this.productInput) 
+           this.userProduct.products.push(this.productInput) 
         }
 
-        //firebase.collection('users').add(this.user.uid, this.product.products[product])
+        firebase.database().ref('users/'+this.userProduct.uid).set({
+        	data: this.userProduct
+        }),
+        /*db.collection('users').add(user.uid, userProduct.products[product])
+        .then( ()=> {
+        	console.log(fb)
+        })
+        .catch( ()=> {
+        	console.log(fb)
+        })*/
 
         this.productInput=' '
     },
     removeProduct(index) {
-        this.product.products.splice(index, 1)
+        this.userProduct.products.splice(index, 1)
 
+        firebase.database().ref('users/'+this.userProduct.uid).set({
+        	data: this.userProduct
+        })
     }
-  }
-  }
+  },
+
+created() {
+	//this.userProduct.products.push(0)
+
+	if(this.enterSucces) {
+		console.log("UserProd " + this.userProduct.uid)
+
+	}
+
+
+	const takeProduct = firebase.database().ref('/users/' + this.userProduct.uid + '/data')
+		takeProduct.on('value', (snapshot)=> {
+			if(snapshot.val()!==null) {
+				this.userProduct = snapshot.val()
+				
+			}else{
+				this.userProduct.products = ['fuck']
+			}
+			console.log("snapshot " + snapshot.val())
+			
+		})
+		
+		//console.log(takeProduct)
+
+	}
+}
+
 </script>
