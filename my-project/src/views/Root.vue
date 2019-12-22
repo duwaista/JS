@@ -19,7 +19,7 @@
           <v-list-item>
           {{user.email}}
           </v-list-item>
-            <v-btn icon @click="enterSucces=false">
+            <v-btn icon @click="logoutUser">
                 <v-icon>mdi-logout</v-icon>
             </v-btn>
             <v-btn icon>
@@ -86,9 +86,7 @@
 </v-list-group>
 </v-list>
 
-<v-list
-    v-if="!enterSucces" 
->
+<v-list v-if="!enterSucces">
 <v-list-group>
         <template v-slot:activator>
             <v-list-item>
@@ -130,11 +128,17 @@
 
 <v-btn @click="enterSucces=true">Test</v-btn>
 
+
 <div class="userShop" v-if="enterSucces" >
 <form class="forShop">
-    <input type="text" class="shop-input" v-model="productInput" placeholder="Добавить">
+
+	
+
+    
     <span class="shop-input-btn">
+    	<input type="text" class="shop-input" v-model="productInput" placeholder="Добавить">
         <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
+        <v-btn @click="takeProductMethod">Try</v-btn>
     </span>
 </form>
 <v-card flat height="80px" v-for="(product, index) in userProduct.products" :key="product" @click="removeProduct(index)">
@@ -164,7 +168,8 @@ import '@/components/style.css'
         user: {
             email: '',
             password: '',
-            uid: ''
+            uid: '',
+            resUid: ''
         },
         newUser: {
           email: '',
@@ -186,15 +191,17 @@ import '@/components/style.css'
       },
 
 methods: {
+
     enterUser() {
       firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
       .then( response=> {
         this.enterSucces=true
         this.enterError=false
         this.user.uid = response.user.uid
+        this.user.resUid = response.user.uid
         this.userProduct.uid = response.user.uid
         this.userProduct.email = response.user.email
-        console.log(this.user.uid)
+        //console.log(this.user.uid)
         const sett = {
           email: response.user.email,
           uid: response.user.uid,
@@ -210,6 +217,7 @@ methods: {
         console.log(Error)
       })
     },
+
     registerUser() {
         if(this.newUser.password !== this.newUser.confirmPassword || this.newUser.password.length<6){
           this.error=true
@@ -227,58 +235,75 @@ methods: {
       }
     },
 
+    logoutUser() {
+    	this.enterSucces = false
+    	this.userProduct.email = ''
+    	this.userProduct.products = []
+    },
+
 
     addProduct(uid, product) {
         if(this.productInput !== ' ') {
            this.userProduct.products.push(this.productInput) 
         }
-
         firebase.database().ref('users/'+this.userProduct.uid).set({
         	data: this.userProduct
         }),
-        /*db.collection('users').add(user.uid, userProduct.products[product])
-        .then( ()=> {
-        	console.log(fb)
-        })
-        .catch( ()=> {
-        	console.log(fb)
-        })*/
-
         this.productInput=' '
     },
+
     removeProduct(index) {
         this.userProduct.products.splice(index, 1)
 
         firebase.database().ref('users/'+this.userProduct.uid).set({
         	data: this.userProduct
         })
-    }
-  },
+    },
 
-created() {
-	//this.userProduct.products.push(0)
-
-	if(this.enterSucces) {
-		console.log("UserProd " + this.userProduct.uid)
-
-	}
-
-
-	const takeProduct = firebase.database().ref('/users/' + this.userProduct.uid + '/data')
-		takeProduct.on('value', (snapshot)=> {
+    takeProductMethod() {
+    	const takeProduct = firebase.database().ref('/users/'+ this.user.resUid.toString() +'/data/')
+			takeProduct.once('value', (snapshot)=> {
 			if(snapshot.val()!==null) {
 				this.userProduct = snapshot.val()
+				console.log("snapshot1 " + snapshot.val())
+				console.log('Obj ' + this.user.uid + ' hred')
 				
 			}else{
 				this.userProduct.products = ['fuck']
+				console.log("Take1 " + takeProduct)
 			}
 			console.log("snapshot " + snapshot.val())
-			
+			console.log("Take " + takeProduct)
 		})
+
+    }
+
+  },
+
+/*created() {
+	//this.userProduct.products.push(0)
+
+
+	const takeProduct = firebase.database().ref('/users/'+ this.user.resUid.toString() +'/data/')
+			takeProduct.once('value', (snapshot)=> {
+			if(snapshot.val()!==null) {
+				this.userProduct = snapshot.val()
+				console.log("snapshot1 " + snapshot.val())
+				console.log('Obj ' + this.user.uid + ' hred')
+				
+			}else{
+				this.userProduct.products = ['fuck']
+				console.log("Take1 " + takeProduct)
+			}
+			console.log("snapshot " + snapshot.val())
+			console.log("Take " + takeProduct)
+		})
+			
+		
 		
 		//console.log(takeProduct)
 
-	}
+	}*/
 }
 
 </script>
