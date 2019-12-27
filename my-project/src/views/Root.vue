@@ -2,23 +2,50 @@
 <div>
     <!--div v-if="sign==='sign-in'" @addUser="isMainPage=$event.mainPage, signComplite=$event.complite, email=$event.email, uid=$event.uid">
     </div-->
+
 <div class="Header">
+
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+    >
+      <v-list>
+      	<v-list-item v-if="enterSucces" link>
+          <v-list-item-content>
+            <v-list-item-title>{{user.email}}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item dense link>
+          <v-list-item-action>
+            <v-icon>mdi-home</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Home</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item dense link>
+          <v-list-item-action>
+            <v-icon>mdi-contact-mail</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Contact</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
     <v-app-bar
     	dark
+    	app
     	flat
     	dense
     	position: fixed>
+    	<v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <template v-slote:activator>
       <v-toolbar-title>
-        <v-btn icon>
-        <v-icon>mdi-menu</v-icon>
-        </v-btn>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items v-if="enterSucces">
-          <v-list-item>
-          {{user.email}}
-          </v-list-item>
             <v-btn icon @click="logoutUser">
                 <v-icon>mdi-logout</v-icon>
             </v-btn>
@@ -39,6 +66,7 @@
       </v-toolbar-items>
       </template>
     </v-app-bar>
+
 </div>
 
 <v-card flat height="36px">
@@ -131,14 +159,11 @@
 
 <div class="userShop" v-if="enterSucces" >
 <form class="forShop">
-
-	
-
-    
     <span class="shop-input-btn">
+    	<input type="text" v-model="userProduct.avatarUrl" placeholder="Set avatar URL">
+    	<v-btn @click="setAvatar">set</v-btn>
     	<input type="text" class="shop-input" v-model="productInput" placeholder="Добавить">
         <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
-        <v-btn @click="takeProductMethod">Try</v-btn>
     </span>
 </form>
 <v-card flat height="80px" v-for="(product, index) in userProduct.products" :key="product" @click="removeProduct(index)">
@@ -163,6 +188,9 @@
 //import SignUp from "./Sign-up"
 import '@/components/style.css'
   export default {
+  	props: {
+      source: String,
+    },
       data () {
           return {
         user: {
@@ -181,18 +209,21 @@ import '@/components/style.css'
         error: false,
         succes: false,
         productInput: '',
+        drawer: false,
+        userAvatar: '',
 
         userProduct: {
             products: [],
             uid: '',
-            email: ''
+            email: '',
+            avatarUrl: '',
         }
         }
       },
 
 methods: {
 
-    enterUser() {
+    async enterUser() {
       firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
       .then( response=> {
         this.enterSucces=true
@@ -201,15 +232,16 @@ methods: {
         this.user.resUid = response.user.uid
         this.userProduct.uid = response.user.uid
         this.userProduct.email = response.user.email
-        //console.log(this.user.uid)
-        const sett = {
-          email: response.user.email,
-          uid: response.user.uid,
-          complite: true,
-          mainPage: true
-        }
-        this.$emit('addUser', sett)
-        console.log(response)
+
+        const takeProduct = firebase.database().ref('/users/'+ this.user.resUid.toString() +'/data/')
+			takeProduct.once('value', (snapshot)=> {
+			if(snapshot.val()!==null) {
+				this.userProduct = snapshot.val()	
+			}else{
+				this.userProduct.products = ['error']
+			}
+		})
+
       })
       .catch( (Error)=> {
         this.enterError=true
@@ -239,6 +271,7 @@ methods: {
     	this.enterSucces = false
     	this.userProduct.email = ''
     	this.userProduct.products = []
+    	this.userAvatar = ''
     },
 
 
@@ -260,50 +293,22 @@ methods: {
         })
     },
 
-    takeProductMethod() {
-    	const takeProduct = firebase.database().ref('/users/'+ this.user.resUid.toString() +'/data/')
-			takeProduct.once('value', (snapshot)=> {
-			if(snapshot.val()!==null) {
-				this.userProduct = snapshot.val()
-				console.log("snapshot1 " + snapshot.val())
-				console.log('Obj ' + this.user.uid + ' hred')
-				
-			}else{
-				this.userProduct.products = ['fuck']
-				console.log("Take1 " + takeProduct)
-			}
-			console.log("snapshot " + snapshot.val())
-			console.log("Take " + takeProduct)
-		})
+    setAvatar() {
+    	if(this.enterSucces) {
+    		this.userAvatar = this.userProduct.avatarUrl
+    		
+    		firebase.database().ref('users/'+this.userProduct.uid).set({
+        	data: this.userProduct
+        })
+    		//this.userProduct.avatarUrl = ''
+    	
+    	}
+    	
+    	console.log("Ava " + this.userProduct.avatarUrl)
+    	console.log("User " + this.userAvatar)
 
     }
-
-  },
-
-/*created() {
-	//this.userProduct.products.push(0)
-
-
-	const takeProduct = firebase.database().ref('/users/'+ this.user.resUid.toString() +'/data/')
-			takeProduct.once('value', (snapshot)=> {
-			if(snapshot.val()!==null) {
-				this.userProduct = snapshot.val()
-				console.log("snapshot1 " + snapshot.val())
-				console.log('Obj ' + this.user.uid + ' hred')
-				
-			}else{
-				this.userProduct.products = ['fuck']
-				console.log("Take1 " + takeProduct)
-			}
-			console.log("snapshot " + snapshot.val())
-			console.log("Take " + takeProduct)
-		})
-			
-		
-		
-		//console.log(takeProduct)
-
-	}*/
+}
 }
 
 </script>
