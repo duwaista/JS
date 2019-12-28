@@ -166,12 +166,12 @@
         <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
     </span>
 </form>
-<v-card flat height="80px" v-for="(product, index) in userProduct.products" :key="product" @click="removeProduct(index)">
+<v-card flat height="70px" v-for="(product, index) in userProduct.products" :key="product" @click="removeProduct(index)">
 
 	<v-list-item>
 
 	<v-list-item-avatar> 
-			<img src="https://sun9-10.userapi.com/c856020/v856020065/168bb9/G3wdJ-jdE8I.jpg">
+			<img :src= "userProduct.avatarUrl">
 	</v-list-item-avatar>
 	<v-card-title>{{ product }}</v-card-title>
 	
