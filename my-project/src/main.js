@@ -4,7 +4,9 @@ import router from './router'
 import Vuetify from 'vuetify'
 import('../node_modules/vuetify/dist/vuetify.min.css')
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import VueYoutube from 'vue-youtube'
 
+Vue.use(VueYoutube)
 Vue.use(Vuetify)
 const vuetifyOptions = { }
 Vue.config.productionTip = false

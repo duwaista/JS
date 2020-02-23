@@ -45,13 +45,16 @@
       <v-toolbar-title>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-items v-if="enterSucces">
+        <v-toolbar-items v-if="enterSucces">
             <v-btn icon @click="logoutUser">
                 <v-icon>mdi-logout</v-icon>
             </v-btn>
-            <v-btn icon>
+            <!--v-btn icon>
               <v-icon>mdi-settings</v-icon>
-            </v-btn>
+            </v-btn-->
+            <v-list-item-avatar>
+              <img :src= "userProduct.avatarUrl">
+            </v-list-item-avatar>
         </v-toolbar-items>
         <v-toolbar-items>
             
@@ -154,19 +157,17 @@
 </v-list-group>
 </v-list>
 
-<v-btn @click="enterSucces=true">Test</v-btn>
-
-
 <div class="userShop" v-if="enterSucces" >
 <form class="forShop">
     <span class="shop-input-btn">
-    	<input type="text" v-model="userProduct.avatarUrl" placeholder="Set avatar URL">
+    	<input type="text" v-model="userAvatar" placeholder="Set avatar URL">
     	<v-btn @click="setAvatar">set</v-btn>
     	<input type="text" class="shop-input" v-model="productInput" placeholder="Добавить">
         <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
     </span>
 </form>
-<v-card flat height="70px" v-for="(product, index) in userProduct.products" :key="product" @click="removeProduct(index)">
+<v-btn icon @click.stop="youtubePlayer = !youtubePlayer">X</v-btn>
+<v-card height="50%" v-for="(product, index) in userProduct.products" :key="product" >
 
 	<v-list-item>
 
@@ -174,18 +175,25 @@
 			<img :src= "userProduct.avatarUrl">
 	</v-list-item-avatar>
 	<v-card-title>{{ product }}</v-card-title>
+  <v-spacer></v-spacer>
+  <v-btn icon @click="removeProduct(index)">
+    <v-icon>mdi-close</v-icon>
+  </v-btn>
 	
 	</v-list-item>
+  
 		
 </v-card>
 </div>
-<div v-if="enterSucces">{{ user.uid }}</div>
+
+<div align="center" v-if="!youtubePlayer">
+<youtube v-model="youtubePlayer" :video-id="videoId" ref="youtube" width="100%" @playing="playing"></youtube>
+<!--v-btn @click="playVideo">play</v-btn-->
+</div>
 
 </div>
 </template>
 <script>
-//import SignIn from "./Sign-in"
-//import SignUp from "./Sign-up"
 import '@/components/style.css'
   export default {
   	props: {
@@ -194,16 +202,17 @@ import '@/components/style.css'
       data () {
           return {
         user: {
-            email: '',
-            password: '',
-            uid: '',
-            resUid: ''
+          email: '',
+          password: '',
+          uid: '',
+          resUid: ''
         },
         newUser: {
           email: '',
           password: '',
           confirmPassword: ''
         },
+
         enterSucces: false,
         enterError: false,
         error: false,
@@ -211,6 +220,8 @@ import '@/components/style.css'
         productInput: '',
         drawer: false,
         userAvatar: '',
+        youtubePlayer: false,
+        videoId: 'pXtj4TkTvS4',
 
         userProduct: {
             products: [],
@@ -234,11 +245,11 @@ methods: {
         this.userProduct.email = response.user.email
 
         const takeProduct = firebase.database().ref('/users/'+ this.user.resUid.toString() +'/data/')
-			takeProduct.once('value', (snapshot)=> {
-			if(snapshot.val()!==null) {
-				this.userProduct = snapshot.val()	
-			}else{
-				this.userProduct.products = ['error']
+			    takeProduct.once('value', (snapshot)=> {
+			    if(snapshot.val()!==null) {
+				    this.userProduct = snapshot.val()	
+			    }else{
+				    this.userProduct.products = ['error']
 			}
 		})
 
@@ -271,7 +282,6 @@ methods: {
     	this.enterSucces = false
     	this.userProduct.email = ''
     	this.userProduct.products = []
-    	this.userAvatar = ''
     },
 
 
@@ -295,20 +305,31 @@ methods: {
 
     setAvatar() {
     	if(this.enterSucces) {
-    		this.userAvatar = this.userProduct.avatarUrl
+        this.userProduct.avatarUrl = this.userAvatar
     		
     		firebase.database().ref('users/'+this.userProduct.uid).set({
         	data: this.userProduct
         })
-    		//this.userProduct.avatarUrl = ''
-    	
+        this.userAvatar = ' ' 	
     	}
     	
-    	console.log("Ava " + this.userProduct.avatarUrl)
-    	console.log("User " + this.userAvatar)
+    },
 
+    async playVideo() {
+      await this.player.playVideo()
+    },
+
+    playing() {
+      //console.log('\o/ we are watching!!!')
     }
-}
+    
+},
+
+computed: {
+    player() {
+      return this.$refs.youtube.player
+    }
+  }
 }
 
 </script>
