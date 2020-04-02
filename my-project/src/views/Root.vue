@@ -52,12 +52,12 @@
             <!--v-btn icon>
               <v-icon>mdi-settings</v-icon>
             </v-btn-->
-            <v-list-item-avatar>
+            <v-list-item-avatar v-if="userProduct.avatarUrl">
               <img :src= "userProduct.avatarUrl">
             </v-list-item-avatar>
         </v-toolbar-items>
         <v-toolbar-items>
-            
+
         </v-toolbar-items>
       <v-toolbar-items v-if="!enterSucces">
         <v-list>
@@ -77,15 +77,12 @@
 </v-card>
 
 <v-list
-    v-if="!enterSucces" 
+    v-if="!enterSucces"
     position: absolute
 >
     <v-list-group>
         <template v-slot:activator>
             <v-list-item>
-                <!--v-list-item-avatar>
-                    <img src="https://anivisual.net/avatar/01/86/32217419.jpg">
-                </v-list-item-avatar-->
                 <v-list-item-title>
                     Вход
                 </v-list-item-title>
@@ -171,7 +168,7 @@
 
 	<v-list-item>
 
-	<v-list-item-avatar> 
+	<v-list-item-avatar v-if="userProduct.avatarUrl">
 			<img :src= "userProduct.avatarUrl">
 	</v-list-item-avatar>
 	<v-card-title>{{ product }}</v-card-title>
@@ -179,16 +176,14 @@
   <v-btn icon @click="removeProduct(index)">
     <v-icon>mdi-close</v-icon>
   </v-btn>
-	
+
 	</v-list-item>
-  
-		
+
 </v-card>
 </div>
 
 <div align="center" v-if="!youtubePlayer">
 <youtube v-model="youtubePlayer" :video-id="videoId" ref="youtube" width="100%" @playing="playing"></youtube>
-<!--v-btn @click="playVideo">play</v-btn-->
 </div>
 
 </div>
@@ -221,7 +216,7 @@ import '@/components/style.css'
         drawer: false,
         userAvatar: '',
         youtubePlayer: false,
-        videoId: 'pXtj4TkTvS4',
+        videoId: '',
 
         userProduct: {
             products: [],
@@ -247,9 +242,9 @@ methods: {
         const takeProduct = firebase.database().ref('/users/'+ this.user.resUid.toString() +'/data/')
 			    takeProduct.once('value', (snapshot)=> {
 			    if(snapshot.val()!==null) {
-				    this.userProduct = snapshot.val()	
+				    this.userProduct = snapshot.val()
 			    }else{
-				    this.userProduct.products = ['error']
+            console.log("no data")
 			}
 		})
 
@@ -280,19 +275,26 @@ methods: {
 
     logoutUser() {
     	this.enterSucces = false
-    	this.userProduct.email = ''
+      this.userProduct.email = ''
+      this.userProduct.password = ''
+      this.user.email = ''
+      this.user.password = ''
     	this.userProduct.products = []
     },
 
 
     addProduct(uid, product) {
-        if(this.productInput !== ' ') {
-           this.userProduct.products.push(this.productInput) 
+      if(!this.userProduct.products){
+        this.userProduct.products = []
+      }else{
+        if(this.productInput !== '') {
+           this.userProduct.products.push(this.productInput)
         }
         firebase.database().ref('users/'+this.userProduct.uid).set({
         	data: this.userProduct
         }),
         this.productInput=' '
+      }
     },
 
     removeProduct(index) {
@@ -301,18 +303,19 @@ methods: {
         firebase.database().ref('users/'+this.userProduct.uid).set({
         	data: this.userProduct
         })
+        
     },
 
     setAvatar() {
     	if(this.enterSucces) {
         this.userProduct.avatarUrl = this.userAvatar
-    		
+
     		firebase.database().ref('users/'+this.userProduct.uid).set({
         	data: this.userProduct
         })
-        this.userAvatar = ' ' 	
+        this.userAvatar = ' '
     	}
-    	
+
     },
 
     async playVideo() {
@@ -322,7 +325,7 @@ methods: {
     playing() {
       //console.log('\o/ we are watching!!!')
     }
-    
+
 },
 
 computed: {
