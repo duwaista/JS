@@ -2,9 +2,7 @@
 <div>
     <!--div v-if="sign==='sign-in'" @addUser="isMainPage=$event.mainPage, signComplite=$event.complite, email=$event.email, uid=$event.uid">
     </div-->
-
 <div class="Header">
-
     <v-navigation-drawer
       v-model="drawer"
       app
@@ -34,16 +32,17 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar
-    	dark
-    	app
-    	flat
-    	dense
-    	position: fixed>
-    	<v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <template v-slote:activator>
-      <v-toolbar-title>
-      </v-toolbar-title>
+<v-app-bar
+  dark
+  app
+  flat
+  dense
+  position: fixed
+  >
+    <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+  <template v-slote:activator>
+  <v-toolbar-title>
+    </v-toolbar-title>
       <v-spacer></v-spacer>
         <v-toolbar-items v-if="enterSucces">
             <v-btn icon @click="logoutUser">
@@ -56,19 +55,16 @@
               <img :src= "userProduct.avatarUrl">
             </v-list-item-avatar>
         </v-toolbar-items>
-        <v-toolbar-items>
-
-        </v-toolbar-items>
       <v-toolbar-items v-if="!enterSucces">
         <v-list>
             <v-list-item>
             </v-list-item>
         </v-list>
-        <v-btn text to="/in">Sign-in</v-btn>
-        <v-btn text to="/up">Sign-up</v-btn>
+        <v-btn text dark @click.stop="inDialog = true">Sign-in</v-btn>
+        <v-btn text dark @click.stop="upDialog = true">Sign-up</v-btn>
       </v-toolbar-items>
-      </template>
-    </v-app-bar>
+    </template>
+  </v-app-bar>
 
 </div>
 
@@ -76,83 +72,71 @@
   <v-card-title></v-card-title>
 </v-card>
 
-<v-list
-    v-if="!enterSucces"
-    position: absolute
->
-    <v-list-group>
-        <template v-slot:activator>
-            <v-list-item>
-                <v-list-item-title>
-                    Вход
-                </v-list-item-title>
-                <v-list-item-content>
-                </v-list-item-content>
-            </v-list-item>
-        </template>
-    <v-list>
-        <template>
-            <v-list-item v-if="!enterSucces" ripple>
-                <v-list-item-content>
-                    <v-list-item-title>
-                        <v-form @submit.prevent="enterUser" class="sign-form">
-                            <div class="form-group">
-                                <input v-model="user.email" type="email" id="email" class="form-control" placeholder="Login">
-                            </div>
-                            <div class="form-group">
-                                <input v-model="user.password" type="password" id="password" class="form-control" placeholder="Password" autocomplete="none">
-                            </div>
-                            <v-btn type="submit">Войти</v-btn>
-                            <div class="alert-sucess" role="alert" v-if="enterSucces">Успешно</div>
-                            <div class="alert-danger" role="alert" v-if="enterError">Упс! Что-то пошло не так</div>
-                        </v-form>
-                    </v-list-item-title>
-                </v-list-item-content>
-            </v-list-item>
-        </template>
-    </v-list>
-</v-list-group>
-</v-list>
+<template class="sign-in">
+  <v-row justify="center">
+    <v-dialog v-model="inDialog" persistent max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Sign-in</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field v-model="user.email" label="Email" type="email" required></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field v-model="user.password" label="Password" type="password" required></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+          <small role="alert" class="alert-sucess" v-if="enterSucces">Успешно!</small>
+          <small class="alert-danger" v-if="enterError">Упс. Что-то пошло не так!</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="inDialog = false">Close</v-btn>
+          <v-btn color="blue darken-1" text @click="enterUser">Enter</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-row>
+</template>
 
-<v-list v-if="!enterSucces">
-<v-list-group>
-        <template v-slot:activator>
-            <v-list-item>
-                <v-list-item-title>
-                    Регистрация
-                </v-list-item-title>
-                <v-list-item-content>
-                </v-list-item-content>
-            </v-list-item>
-        </template>
-    <v-list>
-        <template>
-            <v-list-item ripple>
-                <v-list-item-content>
-                    <v-list-item-title>
-                        <template>
-                            <form @submit.prevent="registerUser" autocomplete="none" class="sign-form">
-                                <div class="form-group">
-                                    <input v-model="newUser.email" type="email" id="email" class="form-control" placeholder="Адрес почты">
-                                </div>
-                                <div class="form-group">
-                                    <input v-model="newUser.password" type="password" id="password" class="form-control" placeholder="Пароль" autocomplete="none">
-                                </div>
-                                <div class="form-group">
-                                    <input v-model="newUser.confirmPassword" type="password" id="password2" class="form-control" placeholder="Повторите пароль" autocomplete="off">
-                                </div>
-                                <div class="alert-danger" role="alert" v-if="error">Пароли не совпадают или содержат менее 6 символов</div>
-                                    <v-btn type="submit">Регистрация</v-btn>
-                                <div class="alert-sucess" role="alert" v-if="succes">Успешно</div>
-                            </form>
-                        </template>
-                    </v-list-item-title>
-                </v-list-item-content>
-            </v-list-item>
-        </template>
-    </v-list>
-</v-list-group>
-</v-list>
+<template class="sign-up">
+  <v-row justify="center">
+    <v-dialog v-model="upDialog" persistent max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Sign-up</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12">
+                <v-text-field v-model="newUser.email" label="Email" type="email" required></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field v-model="newUser.password" label="Password" type="password" required></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field v-model="newUser.confirmPassword" label="Confirm password" type="password" required></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+          <small role="alert" class="alert-sucess" v-if="succes">Успешно. Теперь вы можете войти в систему!</small>
+          <small class="alert-danger" v-if="error">Пароли не совпадают или содержат менее 6 символов</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="upDialog = false">Close</v-btn>
+          <v-btn color="blue darken-1" text @click="registerUser">Register</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-row>
+</template>
+
 
 <div class="userShop" v-if="enterSucces" >
 <form class="forShop">
@@ -160,29 +144,28 @@
     	<input type="text" v-model="userAvatar" placeholder="Set avatar URL">
     	<v-btn @click="setAvatar">set</v-btn>
     	<input type="text" class="shop-input" v-model="productInput" placeholder="Добавить">
-        <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
+      <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
+      <input type="text" v-model="videoId" placeholder="Enter video id">
     </span>
 </form>
 <v-btn icon @click.stop="youtubePlayer = !youtubePlayer">X</v-btn>
-<v-card height="50%" v-for="(product, index) in userProduct.products" :key="product" >
+<v-card dark height="50%" v-for="(product, index) in userProduct.products" :key="product" >
 
 	<v-list-item>
-
-	<v-list-item-avatar v-if="userProduct.avatarUrl">
+	  <v-list-item-avatar v-if="userProduct.avatarUrl">
 			<img :src= "userProduct.avatarUrl">
-	</v-list-item-avatar>
-	<v-card-title>{{ product }}</v-card-title>
-  <v-spacer></v-spacer>
-  <v-btn icon @click="removeProduct(index)">
-    <v-icon>mdi-close</v-icon>
-  </v-btn>
-
+	  </v-list-item-avatar>
+	  <v-card-title>{{ product }}</v-card-title>
+      <v-spacer></v-spacer>
+    <v-btn icon @click="removeProduct(index)">
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
 	</v-list-item>
 
 </v-card>
 </div>
 
-<div align="center" v-if="!youtubePlayer">
+<div align="center" v-if="youtubePlayer">
 <youtube v-model="youtubePlayer" :video-id="videoId" ref="youtube" width="100%" @playing="playing"></youtube>
 </div>
 
@@ -217,6 +200,8 @@ import '@/components/style.css'
         userAvatar: '',
         youtubePlayer: false,
         videoId: '',
+        inDialog: false,
+        upDialog: false,
 
         userProduct: {
             products: [],
@@ -232,8 +217,9 @@ methods: {
     async enterUser() {
       firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
       .then( response=> {
-        this.enterSucces=true
-        this.enterError=false
+        this.enterSucces = true
+        this.enterError = false
+        this.inDialog = false
         this.user.uid = response.user.uid
         this.user.resUid = response.user.uid
         this.userProduct.uid = response.user.uid
@@ -245,9 +231,8 @@ methods: {
 				    this.userProduct = snapshot.val()
 			    }else{
             console.log("no data")
-			}
-		})
-
+			    }
+		    })
       })
       .catch( (Error)=> {
         this.enterError=true
@@ -336,3 +321,4 @@ computed: {
 }
 
 </script>
+

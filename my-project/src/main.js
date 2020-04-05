@@ -18,11 +18,11 @@ new Vue({
   components: { App },
   template: '<App/>',
   vuetify: new Vuetify(vuetifyOptions),
-}),
+})
 
-  new Vuetify({
+  /*new Vuetify({
     icons: {
       iconfont: 'mdi', // default - only for display purposes
     },
     dark: true
-  })
+  })*/
