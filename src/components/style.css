@@ -2,8 +2,8 @@
   font-family: 'Times New Roman', Times, serif;
 }
 
-body{
-  background-image: url("https://img1.goodfon.ru/original/2880x1800/b/af/tekstura-siniy-svetlyy-volny.jpg");
+back{
+  background-image: url("https://images.hdqwalls.com/download/gradient-simple-background-xs-2880x1800.jpg")
 }
 
 span{
@@ -22,5 +22,5 @@ text-align: center;
 }
 input{
   width: 300px;
-  padding: 12px;
+  padding: 9px;
 }

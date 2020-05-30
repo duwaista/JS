@@ -1,7 +1,6 @@
+/*eslint-disable*/
 <template>
 <div>
-    <!--div v-if="sign==='sign-in'" @addUser="isMainPage=$event.mainPage, signComplite=$event.complite, email=$event.email, uid=$event.uid">
-    </div-->
 <div class="Header">
     <v-navigation-drawer
       v-model="drawer"
@@ -39,7 +38,7 @@
   dense
   position: fixed
   >
-    <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+  <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
   <template v-slote:activator>
   <v-toolbar-title>
     </v-toolbar-title>
@@ -48,20 +47,14 @@
             <v-btn icon @click="logoutUser">
                 <v-icon>mdi-logout</v-icon>
             </v-btn>
-            <!--v-btn icon>
-              <v-icon>mdi-settings</v-icon>
-            </v-btn-->
             <v-list-item-avatar v-if="userProduct.avatarUrl">
               <img :src= "userProduct.avatarUrl">
             </v-list-item-avatar>
         </v-toolbar-items>
       <v-toolbar-items v-if="!enterSucces">
-        <v-list>
-            <v-list-item>
-            </v-list-item>
-        </v-list>
-        <v-btn text dark @click.stop="inDialog = true">Sign-in</v-btn>
-        <v-btn text dark @click.stop="upDialog = true">Sign-up</v-btn>
+        <v-btn class="d-lg-none " text dark @click.stop="inDialog = true"><v-icon>mdi-login</v-icon></v-btn>
+        <v-btn class="d-none d-lg-block" text dark @click.stop="inDialog = true">Sign-in</v-btn>
+        <v-btn class="d-none d-lg-block" text dark @click.stop="upDialog = true">Sign-up</v-btn>
       </v-toolbar-items>
     </template>
   </v-app-bar>
@@ -83,19 +76,20 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="user.email" label="Email" type="email" required></v-text-field>
+                <v-text-field clearable v-model="user.email" label="Email" type="email" required></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field v-model="user.password" label="Password" type="password" required></v-text-field>
+                <v-text-field clearable v-model="user.password" label="Password" type="password" required></v-text-field>
               </v-col>
             </v-row>
           </v-container>
           <small role="alert" class="alert-sucess" v-if="enterSucces">Успешно!</small>
           <small class="alert-danger" v-if="enterError">Упс. Что-то пошло не так!</small>
+          <v-btn justify="end" class="d-lg-none" text @click="upDialog = true, inDialog = false"><small>Зарегистрироваться</small></v-btn>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="inDialog = false">Close</v-btn>
+          <v-btn  color="blue darken-1" text @click="inDialog = false, enterError = false">Close</v-btn>
           <v-btn color="blue darken-1" text @click="enterUser">Enter</v-btn>
         </v-card-actions>
       </v-card>
@@ -114,13 +108,13 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="newUser.email" label="Email" type="email" required></v-text-field>
+                <v-text-field clearable v-model="newUser.email" label="Email" type="email" required></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field v-model="newUser.password" label="Password" type="password" required></v-text-field>
+                <v-text-field clearable v-model="newUser.password" label="Password" type="password" required></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field v-model="newUser.confirmPassword" label="Confirm password" type="password" required></v-text-field>
+                <v-text-field clearable v-model="newUser.confirmPassword" label="Confirm password" type="password" required></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -129,7 +123,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="upDialog = false">Close</v-btn>
+          <v-btn color="blue darken-1" text @click="upDialog = false, error = false">Close</v-btn>
           <v-btn color="blue darken-1" text @click="registerUser">Register</v-btn>
         </v-card-actions>
       </v-card>
@@ -148,8 +142,8 @@
       <input type="text" v-model="videoId" placeholder="Enter video id">
     </span>
 </form>
-<v-btn icon @click.stop="youtubePlayer = !youtubePlayer">X</v-btn>
-<v-card dark height="50%" v-for="(product, index) in userProduct.products" :key="product" >
+
+<v-card flat height="50%" v-for="(product, index) in userProduct.products" :key="product" >
 
 	<v-list-item>
 	  <v-list-item-avatar v-if="userProduct.avatarUrl">
@@ -165,6 +159,7 @@
 </v-card>
 </div>
 
+<v-btn icon @click.stop="youtubePlayer = !youtubePlayer">X</v-btn>
 <div align="center" v-if="youtubePlayer">
 <youtube v-model="youtubePlayer" :video-id="videoId" ref="youtube" width="100%" @playing="playing"></youtube>
 </div>
@@ -198,8 +193,8 @@ import '@/components/style.css'
         productInput: '',
         drawer: false,
         userAvatar: '',
-        youtubePlayer: false,
-        videoId: '',
+        youtubePlayer: true,
+        videoId: 'X-JZ-QPApUs',
         inDialog: false,
         upDialog: false,
 
