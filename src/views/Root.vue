@@ -65,6 +65,7 @@
   <v-card-title></v-card-title>
 </v-card>
 
+<!-- Sign-in dialog -->
 <template class="sign-in">
   <v-row justify="center">
     <v-dialog v-model="inDialog" persistent max-width="500px">
@@ -97,6 +98,7 @@
   </v-row>
 </template>
 
+<!-- Sign-up dialog -->
 <template class="sign-up">
   <v-row justify="center">
     <v-dialog v-model="upDialog" persistent max-width="600px">
@@ -114,7 +116,7 @@
                 <v-text-field clearable v-model="newUser.password" label="Password" type="password" required></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field clearable v-model="newUser.confirmPassword" label="Confirm password" type="password" required></v-text-field>
+                <v-text-field textContentType = 'password' clearable v-model="newUser.confirmPassword" label="Confirm password" type="password" required></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -123,14 +125,13 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="upDialog = false, error = false">Close</v-btn>
+          <v-btn color="blue darken-1" text @click="upDialog = false, succes = false, error = false">Close</v-btn>
           <v-btn color="blue darken-1" text @click="registerUser">Register</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
   </v-row>
 </template>
-
 
 <div class="userShop" v-if="enterSucces" >
 <form class="forShop">
@@ -143,25 +144,46 @@
     </span>
 </form>
 
-<v-card flat height="50%" v-for="(product, index) in userProduct.products" :key="product" >
+<div align="center" v-for="(product, index) in userProduct.products" :key="product">
 
-	<v-list-item>
+<!-- Desktop version -->
+<v-card class="d-none d-lg-block" height="100%" width="60%">
+  <v-list-item>
 	  <v-list-item-avatar v-if="userProduct.avatarUrl">
 			<img :src= "userProduct.avatarUrl">
 	  </v-list-item-avatar>
-	  <v-card-title>{{ product }}</v-card-title>
+    <v-list-title>{{user.email}}</v-list-title>
+	  <v-card-subtitle>{{ product }}</v-card-subtitle>
       <v-spacer></v-spacer>
     <v-btn icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
     </v-btn>
 	</v-list-item>
-
+  <v-img height="95%" width="97%" src="https://sun9-53.userapi.com/2orGGpiguvq-GgFqYTvR6Dx-dv7akYqeGtWXDw/r42tajcA9CU.jpg"></v-img>
 </v-card>
+
+<!-- Mobile version -->
+<v-card class="d-lg-none" height="90%" width="100%">  
+	<v-list-item>
+	  <v-list-item-avatar v-if="userProduct.avatarUrl">
+			<img :src= "userProduct.avatarUrl">
+	  </v-list-item-avatar>
+    <v-list-title>{{user.email}}</v-list-title>
+	  <v-card-subtitle>{{ product }}</v-card-subtitle>
+      <v-spacer></v-spacer>
+    <v-btn icon @click="removeProduct(index)">
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
+	</v-list-item>
+  <v-img height="80%" max-width="100%" src="https://sun9-53.userapi.com/2orGGpiguvq-GgFqYTvR6Dx-dv7akYqeGtWXDw/r42tajcA9CU.jpg"></v-img>
+</v-card>
+<br>
 </div>
 
-<v-btn icon @click.stop="youtubePlayer = !youtubePlayer">X</v-btn>
+</div>
+<v-btn align="center" icon @click.stop="youtubePlayer = !youtubePlayer"><v-icon>mdi-close</v-icon></v-btn>
 <div align="center" v-if="youtubePlayer">
-<youtube v-model="youtubePlayer" :video-id="videoId" ref="youtube" width="100%" @playing="playing"></youtube>
+  <youtube v-model="youtubePlayer" :video-id="videoId" ref="youtube" height="400" width="60%" @playing="playing"></youtube>
 </div>
 
 </div>
@@ -203,12 +225,11 @@ import '@/components/style.css'
             uid: '',
             email: '',
             avatarUrl: '',
-        }
+          }
         }
       },
 
 methods: {
-
     async enterUser() {
       firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
       .then( response=> {
@@ -237,15 +258,19 @@ methods: {
     },
 
     registerUser() {
-        if(this.newUser.password !== this.newUser.confirmPassword || this.newUser.password.length<6){
-          this.error=true
-          this.succes=false
+        if(this.newUser.password !== this.newUser.confirmPassword || this.newUser.password.length<6 || this.newUser.password == '' || this.newUser.confirmPassword == '' || this.newUser.email == ''){
+          this.error = true
+          this.succes = false
         }else{
 
-    firebase.auth().createUserWithEmailAndPassword(this.newUser.email, this.newUser.password)
+      firebase.auth().createUserWithEmailAndPassword(this.newUser.email, this.newUser.password)
         .then( ()=> {
           this.succes=true
           this.error=false
+          this.newUser.password = ''
+          this.newUser.confirmPassword = ''
+          this.newUser.email = ''
+
         })
         .catch( error =>{
         console.log(error)
@@ -261,7 +286,6 @@ methods: {
       this.user.password = ''
     	this.userProduct.products = []
     },
-
 
     addProduct(uid, product) {
       if(!this.userProduct.products){
@@ -305,7 +329,6 @@ methods: {
     playing() {
       //console.log('\o/ we are watching!!!')
     }
-
 },
 
 computed: {
