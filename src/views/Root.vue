@@ -133,59 +133,51 @@
   </v-row>
 </template>
 
-<div class="userShop" v-if="enterSucces" >
-<form class="forShop">
-    <span class="shop-input-btn">
-    	<input type="text" v-model="userAvatar" placeholder="Set avatar URL">
-    	<v-btn @click="setAvatar">set</v-btn>
-    	<input type="text" class="shop-input" v-model="productInput" placeholder="Добавить">
+<div v-if="enterSucces" align="center">
+<form>
+    	<input type="text" class="shop-input" v-model="productInput" placeholder="URL изображения">
       <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
-      <input type="text" v-model="videoId" placeholder="Enter video id">
-    </span>
 </form>
 
-<div align="center" v-for="(product, index) in userProduct.products" :key="product">
+<!-- <input type="text" v-model="userAvatar" placeholder="Set avatar URL">
+<v-btn @click="setAvatar">set</v-btn> -->
 
+<div align="center" v-for="(pic, index) in userProduct.pics" :key="pic">
 <!-- Desktop version -->
-<v-card class="d-none d-lg-block" height="100%" width="60%">
+<v-card outlined class="d-none d-lg-block" height="100%" width="60%">
   <v-list-item>
 	  <v-list-item-avatar v-if="userProduct.avatarUrl">
 			<img :src= "userProduct.avatarUrl">
 	  </v-list-item-avatar>
-    <v-list-title>{{user.email}}</v-list-title>
-	  <v-card-subtitle>{{ product }}</v-card-subtitle>
+    <v-card-title>{{user.email}}</v-card-title>
+	  <!-- <v-card-text>{{ pic }}</v-card-text> -->
       <v-spacer></v-spacer>
     <v-btn icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
     </v-btn>
 	</v-list-item>
-  <v-img height="95%" width="97%" src="https://sun9-53.userapi.com/2orGGpiguvq-GgFqYTvR6Dx-dv7akYqeGtWXDw/r42tajcA9CU.jpg"></v-img>
+  <v-img height="95%" width="97%" :src = pic></v-img>
 </v-card>
 
 <!-- Mobile version -->
-<v-card class="d-lg-none" height="90%" width="100%">  
+<v-card dense outlined class="d-lg-none" height="90%" width="100%">  
 	<v-list-item>
 	  <v-list-item-avatar v-if="userProduct.avatarUrl">
 			<img :src= "userProduct.avatarUrl">
 	  </v-list-item-avatar>
-    <v-list-title>{{user.email}}</v-list-title>
-	  <v-card-subtitle>{{ product }}</v-card-subtitle>
+      {{user.email}}
+	  <!-- <v-card-subtitle>{{ pic }}</v-card-subtitle> -->
       <v-spacer></v-spacer>
     <v-btn icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
     </v-btn>
 	</v-list-item>
-  <v-img height="80%" max-width="100%" src="https://sun9-53.userapi.com/2orGGpiguvq-GgFqYTvR6Dx-dv7akYqeGtWXDw/r42tajcA9CU.jpg"></v-img>
+  <v-img height="80%" max-width="100%" :src = pic></v-img>
 </v-card>
 <br>
 </div>
-
 </div>
-<v-btn align="center" icon @click.stop="youtubePlayer = !youtubePlayer"><v-icon>mdi-close</v-icon></v-btn>
-<div align="center" v-if="youtubePlayer">
-  <youtube v-model="youtubePlayer" :video-id="videoId" ref="youtube" height="400" width="60%" @playing="playing"></youtube>
-</div>
-
+<h1>End your posts</h1>
 </div>
 </template>
 <script>
@@ -215,19 +207,17 @@ import '@/components/style.css'
         productInput: '',
         drawer: false,
         userAvatar: '',
-        youtubePlayer: true,
-        videoId: 'X-JZ-QPApUs',
         inDialog: false,
         upDialog: false,
 
         userProduct: {
-            products: [],
-            uid: '',
-            email: '',
-            avatarUrl: '',
-          }
-        }
-      },
+          pics: [],
+          uid: '',
+          email: '',
+          avatarUrl: '',
+        },
+      }
+  },
 
 methods: {
     async enterUser() {
@@ -240,11 +230,11 @@ methods: {
         this.user.resUid = response.user.uid
         this.userProduct.uid = response.user.uid
         this.userProduct.email = response.user.email
-
+        
         const takeProduct = firebase.database().ref('/users/'+ this.user.resUid.toString() +'/data/')
 			    takeProduct.once('value', (snapshot)=> {
 			    if(snapshot.val()!==null) {
-				    this.userProduct = snapshot.val()
+            this.userProduct = snapshot.val()
 			    }else{
             console.log("no data")
 			    }
@@ -270,6 +260,7 @@ methods: {
           this.newUser.password = ''
           this.newUser.confirmPassword = ''
           this.newUser.email = ''
+          console.log(this.newUser)
 
         })
         .catch( error =>{
@@ -284,15 +275,15 @@ methods: {
       this.userProduct.password = ''
       this.user.email = ''
       this.user.password = ''
-    	this.userProduct.products = []
+    	this.userProduct.pics = []
     },
 
-    addProduct(uid, product) {
-      if(!this.userProduct.products){
-        this.userProduct.products = []
+    addProduct(uid, pic) {
+      if(!this.userProduct.pics){
+        this.userProduct.pics = []
       }else{
         if(this.productInput !== '') {
-           this.userProduct.products.push(this.productInput)
+           this.userProduct.pics.unshift(this.productInput)
         }
         firebase.database().ref('users/'+this.userProduct.uid).set({
         	data: this.userProduct
@@ -302,7 +293,7 @@ methods: {
     },
 
     removeProduct(index) {
-        this.userProduct.products.splice(index, 1)
+        this.userProduct.pics.splice(index, 1)
 
         firebase.database().ref('users/'+this.userProduct.uid).set({
         	data: this.userProduct
@@ -321,20 +312,6 @@ methods: {
     	}
 
     },
-
-    async playVideo() {
-      await this.player.playVideo()
-    },
-
-    playing() {
-      //console.log('\o/ we are watching!!!')
-    }
-},
-
-computed: {
-    player() {
-      return this.$refs.youtube.player
-    }
   }
 }
 
