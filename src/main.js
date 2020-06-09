@@ -4,7 +4,6 @@ import router from './router'
 import Vuetify from 'vuetify'
 import('../node_modules/vuetify/dist/vuetify.min.css')
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
-import VueYoutube from 'vue-youtube'
 
 const db = firebase.initializeApp({ 
   apiKey: "AIzaSyBHXEKoASPtta_uQGwN2wb3UcXObF9GdZ8", 
@@ -16,7 +15,6 @@ const db = firebase.initializeApp({
   appId: "1:269806446879:web:5399f33f03fe8e0df9682a" 
   });
 
-Vue.use(VueYoutube)
 Vue.use(Vuetify)
 const vuetifyOptions = { }
 Vue.config.productionTip = false

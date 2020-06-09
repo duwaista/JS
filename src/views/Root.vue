@@ -32,9 +32,7 @@
     </v-navigation-drawer>
 
 <v-app-bar
-  dark
   app
-  flat
   dense
   position: fixed
   >
@@ -52,18 +50,19 @@
             </v-list-item-avatar>
         </v-toolbar-items>
       <v-toolbar-items v-if="!enterSucces">
-        <v-btn class="d-lg-none " text dark @click.stop="inDialog = true"><v-icon>mdi-login</v-icon></v-btn>
-        <v-btn class="d-none d-lg-block" text dark @click.stop="inDialog = true">Sign-in</v-btn>
-        <v-btn class="d-none d-lg-block" text dark @click.stop="upDialog = true">Sign-up</v-btn>
+        <v-btn class="d-lg-none " text @click.stop="inDialog = true"><v-icon>mdi-login</v-icon></v-btn>
+        <v-btn class="d-none d-lg-block" text @click.stop="inDialog = true">Sign-in</v-btn>
+        <v-btn class="d-none d-lg-block" text @click.stop="upDialog = true">Sign-up</v-btn>
       </v-toolbar-items>
     </template>
   </v-app-bar>
 
 </div>
 
-<v-card flat height="36px">
+<v-card flat height="48px">
   <v-card-title></v-card-title>
 </v-card>
+<br>
 
 <!-- Sign-in dialog -->
 <template class="sign-in">
@@ -134,23 +133,27 @@
 </template>
 
 <div v-if="enterSucces" align="center">
-<form>
-    	<input type="text" class="shop-input" v-model="productInput" placeholder="URL изображения">
-      <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
-</form>
+<v-card>
+  <form>
+    <input type="text" class="shop-input" v-model="productInput" placeholder="URL изображения">
+     <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
+  </form>
+  <input type="text" v-model="userAvatar" placeholder="Set avatar URL">
+  <v-btn @click="setAvatar">set</v-btn>
+  <v-btn @click="$vuetify.theme.dark = !$vuetify.theme.dark">Dark</v-btn>
+</v-card>
+<br>
 
-<!-- <input type="text" v-model="userAvatar" placeholder="Set avatar URL">
-<v-btn @click="setAvatar">set</v-btn> -->
+
 
 <div align="center" v-for="(pic, index) in userProduct.pics" :key="pic">
 <!-- Desktop version -->
-<v-card outlined class="d-none d-lg-block" height="100%" width="60%">
+<v-card outlined class="d-none d-lg-block" height="100%" width="55%">
   <v-list-item>
 	  <v-list-item-avatar v-if="userProduct.avatarUrl">
 			<img :src= "userProduct.avatarUrl">
 	  </v-list-item-avatar>
     <v-card-title>{{user.email}}</v-card-title>
-	  <!-- <v-card-text>{{ pic }}</v-card-text> -->
       <v-spacer></v-spacer>
     <v-btn icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
@@ -160,13 +163,12 @@
 </v-card>
 
 <!-- Mobile version -->
-<v-card dense outlined class="d-lg-none" height="90%" width="100%">  
+<v-card class="d-lg-none" height="90%" width="99%">  
 	<v-list-item>
 	  <v-list-item-avatar v-if="userProduct.avatarUrl">
 			<img :src= "userProduct.avatarUrl">
 	  </v-list-item-avatar>
       {{user.email}}
-	  <!-- <v-card-subtitle>{{ pic }}</v-card-subtitle> -->
       <v-spacer></v-spacer>
     <v-btn icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
@@ -177,7 +179,7 @@
 <br>
 </div>
 </div>
-<h1>End your posts</h1>
+
 </div>
 </template>
 <script>
