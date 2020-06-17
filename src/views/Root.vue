@@ -2,34 +2,13 @@
 <template>
 <div>
 <div class="Header">
-    <v-navigation-drawer
-      v-model="drawer"
-      app
-    >
-      <v-list>
-      	<v-list-item v-if="enterSucces" link>
-          <v-list-item-content>
-            <v-list-item-title>{{user.email}}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item dense link>
-          <v-list-item-action>
-            <v-icon>mdi-home</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Home</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item dense link>
-          <v-list-item-action>
-            <v-icon>mdi-contact-mail</v-icon>
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title>Contact</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
+  
+<dialogComponent 
+  :drawer=this.drawer 
+  :enterSuccess=this.enterSuccess 
+  :email=this.user.email
+>
+</dialogComponent>
 
 <v-app-bar
   app
@@ -41,7 +20,7 @@
   <v-toolbar-title>
     </v-toolbar-title>
       <v-spacer></v-spacer>
-        <v-toolbar-items v-if="enterSucces">
+        <v-toolbar-items v-if="enterSuccess">
             <v-btn icon @click="logoutUser">
                 <v-icon>mdi-logout</v-icon>
             </v-btn>
@@ -49,7 +28,7 @@
               <img :src= "userProduct.avatarUrl">
             </v-list-item-avatar>
         </v-toolbar-items>
-      <v-toolbar-items v-if="!enterSucces">
+      <v-toolbar-items v-if="!enterSuccess">
         <v-btn class="d-lg-none " text @click.stop="inDialog = true"><v-icon>mdi-login</v-icon></v-btn>
         <v-btn class="d-none d-lg-block" text @click.stop="inDialog = true">Sign-in</v-btn>
         <v-btn class="d-none d-lg-block" text @click.stop="upDialog = true">Sign-up</v-btn>
@@ -83,8 +62,7 @@
               </v-col>
             </v-row>
           </v-container>
-          <small role="alert" class="alert-sucess" v-if="enterSucces">Успешно!</small>
-          <small class="alert-danger" v-if="enterError">Упс. Что-то пошло не так!</small>
+          <v-alert type="error" v-if="enterError">Error</v-alert>
           <v-btn justify="end" class="d-lg-none" text @click="upDialog = true, inDialog = false"><small>Зарегистрироваться</small></v-btn>
         </v-card-text>
         <v-card-actions>
@@ -119,12 +97,12 @@
               </v-col>
             </v-row>
           </v-container>
-          <small role="alert" class="alert-sucess" v-if="succes">Успешно. Теперь вы можете войти в систему!</small>
-          <small class="alert-danger" v-if="error">Пароли не совпадают или содержат менее 6 символов</small>
+          <v-alert type="success" v-if="success">Успешно. Теперь вы можете войти в систему!</v-alert>
+          <v-alert type="error" v-if="error">Пароли не совпадают или содержат менее 6 символов</v-alert>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="upDialog = false, succes = false, error = false">Close</v-btn>
+          <v-btn color="blue darken-1" text @click="upDialog = false, success = false, error = false">Close</v-btn>
           <v-btn color="blue darken-1" text @click="registerUser">Register</v-btn>
         </v-card-actions>
       </v-card>
@@ -132,7 +110,7 @@
   </v-row>
 </template>
 
-<div v-if="enterSucces" align="center">
+<div v-if="enterSuccess" align="center">
 <v-card>
   <form>
     <input type="text" class="shop-input" v-model="productInput" placeholder="URL изображения">
@@ -143,8 +121,6 @@
   <v-btn @click="$vuetify.theme.dark = !$vuetify.theme.dark">Dark</v-btn>
 </v-card>
 <br>
-
-
 
 <div align="center" v-for="(pic, index) in userProduct.pics" :key="pic">
 <!-- Desktop version -->
@@ -180,11 +156,19 @@
 </div>
 </div>
 
+<div v-if="!enterSuccess" align="center">
+<v-alert dismissible width="60%" type="info">Авторизуйтесь, чтобы увидеть больше</v-alert>
+</div>
+
 </div>
 </template>
 <script>
 import '@/components/style.css'
+import dialogComponent from '@/components/Dialog.vue'
   export default {
+    components: {
+      dialogComponent
+    },
   	props: {
       source: String,
     },
@@ -202,10 +186,10 @@ import '@/components/style.css'
           confirmPassword: ''
         },
 
-        enterSucces: false,
+        enterSuccess: false,
         enterError: false,
         error: false,
-        succes: false,
+        success: false,
         productInput: '',
         drawer: false,
         userAvatar: '',
@@ -223,9 +207,10 @@ import '@/components/style.css'
 
 methods: {
     async enterUser() {
-      firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
+      if(this.user.email != null || this.user.password != null){
+        firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
       .then( response=> {
-        this.enterSucces = true
+        this.enterSuccess = true
         this.enterError = false
         this.inDialog = false
         this.user.uid = response.user.uid
@@ -244,20 +229,26 @@ methods: {
       })
       .catch( (Error)=> {
         this.enterError=true
-        this.enterSucces=false
+        this.enterSuccess=false
         console.log(Error)
       })
+
+      }else{
+        this.enterError=true
+        this.enterSuccess=false
+      }
+      
     },
 
     registerUser() {
         if(this.newUser.password !== this.newUser.confirmPassword || this.newUser.password.length<6 || this.newUser.password == '' || this.newUser.confirmPassword == '' || this.newUser.email == ''){
           this.error = true
-          this.succes = false
+          this.success = false
         }else{
 
       firebase.auth().createUserWithEmailAndPassword(this.newUser.email, this.newUser.password)
         .then( ()=> {
-          this.succes=true
+          this.success=true
           this.error=false
           this.newUser.password = ''
           this.newUser.confirmPassword = ''
@@ -272,7 +263,7 @@ methods: {
     },
 
     logoutUser() {
-    	this.enterSucces = false
+    	this.enterSuccess = false
       this.userProduct.email = ''
       this.userProduct.password = ''
       this.user.email = ''
@@ -304,7 +295,7 @@ methods: {
     },
 
     setAvatar() {
-    	if(this.enterSucces) {
+    	if(this.enterSuccess) {
         this.userProduct.avatarUrl = this.userAvatar
 
     		firebase.database().ref('users/'+this.userProduct.uid).set({
@@ -314,7 +305,14 @@ methods: {
     	}
 
     },
-  }
+  },
+
+  created() {
+    let vm = this;
+    document.addEventListener('click', function () {
+      vm.drawer=false;
+    });
+  },
 }
 
 </script>
