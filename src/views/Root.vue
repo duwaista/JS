@@ -160,6 +160,20 @@
 <v-alert dismissible width="60%" type="info">Авторизуйтесь, чтобы увидеть больше</v-alert>
 </div>
 
+<div v-if="!enterSuccess" align="center" >
+<v-card v-for="(post) in all.posts" :key="post" outlined  height="100%" width="55%">
+  <v-list-item>
+	  <v-list-item-avatar v-if="all.avatarUrl">
+			<img :src= "all.avatarUrl">
+	  </v-list-item-avatar>
+    <v-card-title>{{all.email}}</v-card-title>
+
+	</v-list-item>
+<v-img height="95%" width="97%" :src = post></v-img>
+</v-card>
+<br>
+</div>
+
 </div>
 </template>
 <script>
@@ -202,6 +216,12 @@ import dialogComponent from '@/components/Dialog.vue'
           email: '',
           avatarUrl: '',
         },
+        all: {
+          posts: [],
+          uid: '',
+          email: '',
+          avatarUrl: ''
+        }
       }
   },
 
@@ -271,37 +291,52 @@ methods: {
     	this.userProduct.pics = []
     },
 
-    addProduct(uid, pic) {
+    async addProduct(uid, pic) {
       if(!this.userProduct.pics){
         this.userProduct.pics = []
       }else{
         if(this.productInput !== '') {
-           this.userProduct.pics.unshift(this.productInput)
+          this.userProduct.pics.unshift(this.productInput)
+          this.all.posts.unshift(this.productInput)
+          this.all.email = this.userProduct.email
+          this.all.uid = this.userProduct.uid
+          
         }
         firebase.database().ref('users/'+this.userProduct.uid).set({
         	data: this.userProduct
         }),
-        this.productInput=' '
+        await firebase.database().ref('posts/').set({
+        	data: this.all
+        }),
+        this.productInput=''
       }
+      
     },
 
     removeProduct(index) {
         this.userProduct.pics.splice(index, 1)
+        this.all.posts.splice(index, 1)
 
         firebase.database().ref('users/'+this.userProduct.uid).set({
         	data: this.userProduct
+        }),
+        firebase.database().ref('posts/').set({
+        	data: this.all
         })
-        
     },
 
-    setAvatar() {
+    async setAvatar() {
     	if(this.enterSuccess) {
         this.userProduct.avatarUrl = this.userAvatar
+        this.all.avatarUrl = this.userProduct.avatarUrl
 
     		firebase.database().ref('users/'+this.userProduct.uid).set({
         	data: this.userProduct
-        })
-        this.userAvatar = ' '
+        }),
+        await firebase.database().ref('posts/').set({
+        	data: this.all
+        }),
+        this.userAvatar = ''
     	}
 
     },
@@ -312,7 +347,18 @@ methods: {
     document.addEventListener('click', function () {
       vm.drawer=false;
     });
+
+    const takePosts = firebase.database().ref('/posts/data/')
+			takePosts.once('value', (snapshot)=> {
+			  if(snapshot.val()!==null) {
+          this.all = snapshot.val()
+			  }
+    })
   },
+
+  beforeCreate() {
+    
+  }
 }
 
 </script>
