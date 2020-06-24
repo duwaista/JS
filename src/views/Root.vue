@@ -112,10 +112,9 @@
 
 <div v-if="enterSuccess" align="center">
 <v-card>
-  <form>
-    <input type="text" class="shop-input" v-model="productInput" placeholder="URL изображения">
+    <input type="text" v-model="productInput" placeholder="URL изображения">
      <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
-  </form>
+     <br>
   <input type="text" v-model="userAvatar" placeholder="Set avatar URL">
   <v-btn @click="setAvatar">set</v-btn>
   <v-btn @click="$vuetify.theme.dark = !$vuetify.theme.dark">Dark</v-btn>
@@ -139,7 +138,7 @@
 </v-card>
 
 <!-- Mobile version -->
-<v-card class="d-lg-none" height="90%" width="99%">  
+<v-card class="d-lg-none" height="90%" width="97%">  
 	<v-list-item>
 	  <v-list-item-avatar v-if="userProduct.avatarUrl">
 			<img :src= "userProduct.avatarUrl">
@@ -160,18 +159,35 @@
 <v-alert dismissible width="60%" type="info">Авторизуйтесь, чтобы увидеть больше</v-alert>
 </div>
 
-<div v-if="!enterSuccess" align="center" >
-<v-card v-for="(post) in all.posts" :key="post" outlined  height="100%" width="55%">
+<div v-if="loaded" align="center">
+<v-progress-circular color="primary" :indeterminate="true"></v-progress-circular>
+</div>
+
+<div v-show="!enterSuccess" align="center">
+<div  v-for="(post) in all.posts" :key="post">
+<!-- Desktop version -->
+<v-card outlined class="d-none d-lg-block" height="100%" width="55%">
   <v-list-item>
 	  <v-list-item-avatar v-if="all.avatarUrl">
 			<img :src= "all.avatarUrl">
 	  </v-list-item-avatar>
     <v-card-title>{{all.email}}</v-card-title>
-
 	</v-list-item>
 <v-img height="95%" width="97%" :src = post></v-img>
 </v-card>
+
+<!-- Mobile version -->
+<v-card class="d-lg-none" height="90%" width="97%">
+  <v-list-item>
+	  <v-list-item-avatar v-if="all.avatarUrl">
+			<img :src= "all.avatarUrl">
+	  </v-list-item-avatar>
+    <v-card-title>{{all.email}}</v-card-title>
+	</v-list-item>
+<v-img height="80%" max-width="100%" :src = post></v-img>
+</v-card>
 <br>
+</div>
 </div>
 
 </div>
@@ -209,6 +225,7 @@ import dialogComponent from '@/components/Dialog.vue'
         userAvatar: '',
         inDialog: false,
         upDialog: false,
+        loaded: true,
 
         userProduct: {
           pics: [],
@@ -352,13 +369,13 @@ methods: {
 			takePosts.once('value', (snapshot)=> {
 			  if(snapshot.val()!==null) {
           this.all = snapshot.val()
-			  }
+        }
     })
+    .then( ()=> {
+      this.loaded = false
+    })
+    console.log(this.loaded)
   },
-
-  beforeCreate() {
-    
-  }
 }
 
 </script>
