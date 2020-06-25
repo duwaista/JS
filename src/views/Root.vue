@@ -4,7 +4,6 @@
 <div class="Header">
   
 <dialogComponent 
-  :drawer=this.drawer 
   :enterSuccess=this.enterSuccess 
   :email=this.user.email
 >
@@ -110,6 +109,7 @@
   </v-row>
 </template>
 
+<!-- Settings -->
 <div v-if="enterSuccess" align="center">
 <v-card>
     <input type="text" v-model="productInput" placeholder="URL изображения">
@@ -117,12 +117,13 @@
      <br>
   <input type="text" v-model="userAvatar" placeholder="Set avatar URL">
   <v-btn @click="setAvatar">set</v-btn>
-  <v-btn @click="$vuetify.theme.dark = !$vuetify.theme.dark">Dark</v-btn>
+  <v-btn @click="dark = !dark">Dark</v-btn>
+  <!-- <v-switch v-model="dark"></v-switch> -->
 </v-card>
 <br>
 
 <div align="center" v-for="(pic, index) in userProduct.pics" :key="pic">
-<!-- Desktop version -->
+<!-- Desktop version with auth -->
 <v-card outlined class="d-none d-lg-block" height="100%" width="55%">
   <v-list-item>
 	  <v-list-item-avatar v-if="userProduct.avatarUrl">
@@ -137,7 +138,7 @@
   <v-img height="95%" width="97%" :src = pic></v-img>
 </v-card>
 
-<!-- Mobile version -->
+<!-- Mobile version with auth -->
 <v-card class="d-lg-none" height="90%" width="97%">  
 	<v-list-item>
 	  <v-list-item-avatar v-if="userProduct.avatarUrl">
@@ -153,10 +154,6 @@
 </v-card>
 <br>
 </div>
-</div>
-
-<div v-if="!enterSuccess" align="center">
-<v-alert dismissible width="60%" type="info">Авторизуйтесь, чтобы увидеть больше</v-alert>
 </div>
 
 <div v-if="loaded" align="center">
@@ -221,7 +218,6 @@ import dialogComponent from '@/components/Dialog.vue'
         error: false,
         success: false,
         productInput: '',
-        drawer: false,
         userAvatar: '',
         inDialog: false,
         upDialog: false,
@@ -309,6 +305,7 @@ methods: {
     },
 
     async addProduct(uid, pic) {
+      if(!this.all.posts) this.all.posts = []
       if(!this.userProduct.pics){
         this.userProduct.pics = []
       }else{
@@ -374,8 +371,29 @@ methods: {
     .then( ()=> {
       this.loaded = false
     })
-    console.log(this.loaded)
   },
+
+  computed: {
+    dark: {
+      get() {
+        return this.$store.state.dark
+      },
+      set(v) {
+        this.$store.commit('setDark', v)
+        this.$vuetify.theme.dark = v
+      }
+    },
+
+    drawer: {
+      get() {
+        return this.$store.state.drawer
+      },
+      set(w) {
+        this.$store.state.drawer = w
+
+      }
+    }
+  }
 }
 
 </script>

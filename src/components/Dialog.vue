@@ -38,10 +38,6 @@
 export default {
   name: 'dialogComponent',
     props: {
-      drawer: {
-        type: Boolean,
-        default: false
-      },
       enterSuccess: {
         type: Boolean,
         default: false
@@ -51,6 +47,17 @@ export default {
         default: ''
       }
     },
+
+    computed: {
+      drawer: {
+        get() {
+        return this.$store.state.drawer
+      },
+      set(w) {
+        this.$store.state.drawer = w
+      }
+      }
+    }
 }
 
 </script>
