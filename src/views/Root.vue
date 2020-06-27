@@ -1,4 +1,4 @@
-/*eslint-disable*/
+
 <template>
 <div>
 <div class="Header">
@@ -54,10 +54,10 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field clearable v-model="user.email" label="Email" type="email" required></v-text-field>
+                <v-text-field @keyup.enter="enterUser" clearable v-model="user.email" label="Email" type="email" required></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field clearable v-model="user.password" label="Password" type="password" required></v-text-field>
+                <v-text-field @keyup.enter="enterUser" clearable v-model="user.password" label="Password" type="password" required></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -112,13 +112,12 @@
 <!-- Settings -->
 <div v-if="enterSuccess" align="center">
 <v-card>
-    <input type="text" v-model="productInput" placeholder="URL изображения">
+    <input @keyup.enter="addProduct" type="text" v-model="productInput" placeholder="URL изображения">
      <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
      <br>
-  <input type="text" v-model="userAvatar" placeholder="Set avatar URL">
+  <input type="text" @keyup.enter="setAvatar" v-model="userAvatar" placeholder="Set avatar URL">
   <v-btn @click="setAvatar">set</v-btn>
   <v-btn @click="dark = !dark">Dark</v-btn>
-  <!-- <v-switch v-model="dark"></v-switch> -->
 </v-card>
 <br>
 
@@ -144,7 +143,7 @@
 	  <v-list-item-avatar v-if="userProduct.avatarUrl">
 			<img :src= "userProduct.avatarUrl">
 	  </v-list-item-avatar>
-      {{user.email}}
+      <v-card-title>{{user.email}}</v-card-title>
       <v-spacer></v-spacer>
     <v-btn icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
