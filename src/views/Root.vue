@@ -1,11 +1,10 @@
-
 <template>
 <div>
 <div class="Header">
   
 <dialogComponent 
-  :enterSuccess=this.enterSuccess 
-  :email=this.user.email
+  :enterSuccess = this.enterSuccess 
+  :email = this.userProduct.email
 >
 </dialogComponent>
 
@@ -15,7 +14,7 @@
   position: fixed
   >
   <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-  <template v-slote:activator>
+  <template>
   <v-toolbar-title>
     </v-toolbar-title>
       <v-spacer></v-spacer>
@@ -34,7 +33,6 @@
       </v-toolbar-items>
     </template>
   </v-app-bar>
-
 </div>
 
 <v-card flat height="48px">
@@ -43,7 +41,6 @@
 <br>
 
 <!-- Sign-in dialog -->
-<template class="sign-in">
   <v-row justify="center">
     <v-dialog v-model="inDialog" persistent max-width="500px">
       <v-card>
@@ -72,10 +69,8 @@
       </v-card>
     </v-dialog>
   </v-row>
-</template>
 
 <!-- Sign-up dialog -->
-<template class="sign-up">
   <v-row justify="center">
     <v-dialog v-model="upDialog" persistent max-width="600px">
       <v-card>
@@ -107,17 +102,18 @@
       </v-card>
     </v-dialog>
   </v-row>
-</template>
 
 <!-- Settings -->
 <div v-if="enterSuccess" align="center">
 <v-card>
+  <form>
     <input @keyup.enter="addProduct" type="text" v-model="productInput" placeholder="URL изображения">
      <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
      <br>
-  <input type="text" @keyup.enter="setAvatar" v-model="userAvatar" placeholder="Set avatar URL">
-  <v-btn @click="setAvatar">set</v-btn>
-  <v-btn @click="dark = !dark">Dark</v-btn>
+    <input @keyup.enter="setAvatar" autocomplete="none" type="text" v-model="userAvatar" placeholder="Set avatar URL">
+    <v-btn @click="setAvatar">set</v-btn>
+    <v-btn @click="dark = !dark">Dark</v-btn>
+  </form>
 </v-card>
 <br>
 
@@ -128,7 +124,7 @@
 	  <v-list-item-avatar v-if="userProduct.avatarUrl">
 			<img :src= "userProduct.avatarUrl">
 	  </v-list-item-avatar>
-    <v-card-title>{{user.email}}</v-card-title>
+    <v-card-title>{{userProduct.email}}</v-card-title>
       <v-spacer></v-spacer>
     <v-btn icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
@@ -143,7 +139,7 @@
 	  <v-list-item-avatar v-if="userProduct.avatarUrl">
 			<img :src= "userProduct.avatarUrl">
 	  </v-list-item-avatar>
-      <v-card-title>{{user.email}}</v-card-title>
+      {{userProduct.email}}
       <v-spacer></v-spacer>
     <v-btn icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
@@ -227,12 +223,14 @@ import dialogComponent from '@/components/Dialog.vue'
           uid: '',
           email: '',
           avatarUrl: '',
+          createdAt: ''
         },
         all: {
           posts: [],
           uid: '',
           email: '',
-          avatarUrl: ''
+          avatarUrl: '',
+          createdAt: ''
         }
       }
   },
@@ -257,7 +255,8 @@ methods: {
 			    }else{
             console.log("no data")
 			    }
-		    })
+        })
+        this.user.email= this.user.password = this.user.uid = this.user.resUid = ''
       })
       .catch( (Error)=> {
         this.enterError=true
@@ -298,9 +297,9 @@ methods: {
     	this.enterSuccess = false
       this.userProduct.email = ''
       this.userProduct.password = ''
-      this.user.email = ''
-      this.user.password = ''
-    	this.userProduct.pics = []
+      this.user.email= this.user.password = this.user.uid = this.user.resUid = ''
+      this.userProduct.pics = []
+      this.userProduct.avatarUrl = this.userProduct.uid = this.userProduct.email = ''
     },
 
     async addProduct(uid, pic) {
