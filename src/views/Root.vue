@@ -151,32 +151,33 @@
 </div>
 </div>
 
-<div v-if="loaded" align="center">
+<div v-if="loading" align="center">
 <v-progress-circular color="primary" :indeterminate="true"></v-progress-circular>
 </div>
 
-<div v-show="!enterSuccess" align="center">
-<div  v-for="(post) in all.posts" :key="post">
+<div v-if="!loading" v-show="!enterSuccess" align="center">
+<div v-for="(index) in all" :key="index.posts">
 <!-- Desktop version -->
 <v-card outlined class="d-none d-lg-block" height="100%" width="55%">
   <v-list-item>
-	  <v-list-item-avatar v-if="all.avatarUrl">
-			<img :src= "all.avatarUrl">
+	  <v-list-item-avatar v-if="index.avatarUrl">
+			<img :src= "index.avatarUrl">
 	  </v-list-item-avatar>
-    <v-card-title>{{all.email}}</v-card-title>
+    <v-card-title>{{ index.email }}</v-card-title>
+    
 	</v-list-item>
-<v-img height="95%" width="97%" :src = post></v-img>
+<v-img height="95%" width="97%" :src = index.posts></v-img>
 </v-card>
 
 <!-- Mobile version -->
 <v-card class="d-lg-none" height="90%" width="97%">
   <v-list-item>
-	  <v-list-item-avatar v-if="all.avatarUrl">
-			<img :src= "all.avatarUrl">
+	  <v-list-item-avatar v-if="index.avatarUrl">
+			<img :src= "index.avatarUrl">
 	  </v-list-item-avatar>
-    <v-card-title>{{all.email}}</v-card-title>
+    <v-card-title>{{index.email}}</v-card-title>
 	</v-list-item>
-<v-img height="80%" max-width="100%" :src = post></v-img>
+<v-img height="80%" max-width="100%" :src = index.posts></v-img>
 </v-card>
 <br>
 </div>
@@ -216,22 +217,20 @@ import dialogComponent from '@/components/Dialog.vue'
         userAvatar: '',
         inDialog: false,
         upDialog: false,
-        loaded: true,
+        loading: true,
 
         userProduct: {
           pics: [],
           uid: '',
           email: '',
-          avatarUrl: '',
-          createdAt: ''
+          avatarUrl: ''
         },
-        all: {
-          posts: [],
+        all: [{
+          posts: '',
           uid: '',
           email: '',
-          avatarUrl: '',
-          createdAt: ''
-        }
+          avatarUrl: ''
+        }]
       }
   },
 
@@ -261,7 +260,6 @@ methods: {
       .catch( (Error)=> {
         this.enterError=true
         this.enterSuccess=false
-        console.log(Error)
       })
 
       }else{
@@ -284,11 +282,9 @@ methods: {
           this.newUser.password = ''
           this.newUser.confirmPassword = ''
           this.newUser.email = ''
-          console.log(this.newUser)
 
         })
         .catch( error =>{
-        console.log(error)
       })
       }
     },
@@ -359,15 +355,15 @@ methods: {
     document.addEventListener('click', function () {
       vm.drawer=false;
     });
-
-    const takePosts = firebase.database().ref('/posts/data/')
+    const takePosts = firebase.database().ref('/posted/')
 			takePosts.once('value', (snapshot)=> {
 			  if(snapshot.val()!==null) {
           this.all = snapshot.val()
         }
     })
     .then( ()=> {
-      this.loaded = false
+      this.loading = false
+      
     })
   },
 
