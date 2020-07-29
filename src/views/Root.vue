@@ -4,7 +4,7 @@
   
 <dialogComponent 
   :enterSuccess = this.enterSuccess 
-  :email = this.userProduct.email
+  :email = this.user.email
 >
 </dialogComponent>
 
@@ -22,8 +22,8 @@
             <v-btn icon @click="logoutUser">
                 <v-icon>mdi-logout</v-icon>
             </v-btn>
-            <v-list-item-avatar v-if="userProduct.avatarUrl">
-              <img :src= "userProduct.avatarUrl">
+            <v-list-item-avatar v-if="photoUrl">
+              <img :src= "photoUrl">
             </v-list-item-avatar>
         </v-toolbar-items>
       <v-toolbar-items v-if="!enterSuccess">
@@ -117,35 +117,35 @@
 </v-card>
 <br>
 
-<div align="center" v-for="(pic, index) in userProduct.pics" :key="pic">
+<div align="center" v-for="(index) in userFeed" :key="index.posts">
 <!-- Desktop version with auth -->
 <v-card outlined class="d-none d-lg-block" height="100%" width="55%">
   <v-list-item>
-	  <v-list-item-avatar v-if="userProduct.avatarUrl">
-			<img :src= "userProduct.avatarUrl">
+	  <v-list-item-avatar v-if="index.avatarUrl">
+			<img :src= "index.avatarUrl">
 	  </v-list-item-avatar>
-    <v-card-title>{{userProduct.email}}</v-card-title>
+    <v-card-title>{{index.email}}</v-card-title>
       <v-spacer></v-spacer>
     <v-btn icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
     </v-btn>
 	</v-list-item>
-  <v-img height="95%" width="97%" :src = pic></v-img>
+  <v-img height="95%" width="97%" :src = index.posts></v-img>
 </v-card>
 
 <!-- Mobile version with auth -->
 <v-card class="d-lg-none" height="90%" width="97%">  
 	<v-list-item>
-	  <v-list-item-avatar v-if="userProduct.avatarUrl">
-			<img :src= "userProduct.avatarUrl">
+	  <v-list-item-avatar v-if="index.avatarUrl">
+			<img :src= "index.avatarUrl">
 	  </v-list-item-avatar>
-      {{userProduct.email}}
+      {{index.email}}
       <v-spacer></v-spacer>
     <v-btn icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
     </v-btn>
 	</v-list-item>
-  <v-img height="80%" max-width="100%" :src = pic></v-img>
+  <v-img height="80%" max-width="100%" :src = index.posts></v-img>
 </v-card>
 <br>
 </div>
@@ -193,15 +193,14 @@ import dialogComponent from '@/components/Dialog.vue'
       dialogComponent
     },
   	props: {
-      source: String,
+      source: String
     },
       data () {
           return {
         user: {
           email: '',
           password: '',
-          uid: '',
-          resUid: ''
+          uid: ''
         },
         newUser: {
           email: '',
@@ -215,21 +214,23 @@ import dialogComponent from '@/components/Dialog.vue'
         success: false,
         productInput: '',
         userAvatar: '',
+        photoUrl: '',
         inDialog: false,
         upDialog: false,
         loading: true,
 
-        userProduct: {
-          pics: [],
+        userFeed: [{
+          posts: '',
           uid: '',
           email: '',
-          avatarUrl: ''
-        },
+          avatarUrl: '',
+        }],
+
         all: [{
           posts: '',
           uid: '',
           email: '',
-          avatarUrl: ''
+          avatarUrl: '',
         }]
       }
   },
@@ -238,26 +239,25 @@ methods: {
     async enterUser() {
       if(this.user.email != null || this.user.password != null){
         firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
-      .then( response=> {
+      .then( (response)=> {
         this.enterSuccess = true
         this.enterError = false
         this.inDialog = false
         this.user.uid = response.user.uid
-        this.user.resUid = response.user.uid
-        this.userProduct.uid = response.user.uid
-        this.userProduct.email = response.user.email
-        
-        const takeProduct = firebase.database().ref('/users/'+ this.user.resUid.toString() +'/data/')
-			    takeProduct.once('value', (snapshot)=> {
+        this.user.email = response.user.email
+        this.photoUrl = response.user.photoURL
+
+        const takeProduct = firebase.database().ref('/posted/data')
+			  takeProduct.once('value', (snapshot)=> {
 			    if(snapshot.val()!==null) {
-            this.userProduct = snapshot.val()
-			    }else{
+            this.userFeed = snapshot.val()
+          }else{
             console.log("no data")
-			    }
+          }
         })
-        this.user.email= this.user.password = this.user.uid = this.user.resUid = ''
       })
       .catch( (Error)=> {
+        console.log(Error)
         this.enterError=true
         this.enterSuccess=false
       })
@@ -266,7 +266,6 @@ methods: {
         this.enterError=true
         this.enterSuccess=false
       }
-      
     },
 
     registerUser() {
@@ -282,71 +281,66 @@ methods: {
           this.newUser.password = ''
           this.newUser.confirmPassword = ''
           this.newUser.email = ''
-
         })
         .catch( error =>{
-      })
+        })
       }
     },
 
     logoutUser() {
     	this.enterSuccess = false
-      this.userProduct.email = ''
-      this.userProduct.password = ''
-      this.user.email= this.user.password = this.user.uid = this.user.resUid = ''
-      this.userProduct.pics = []
-      this.userProduct.avatarUrl = this.userProduct.uid = this.userProduct.email = ''
+      this.photoUrl = ''
+      this.user.password = ''
+      this.user.uid = ''
+      this.userAvatar = ''
+      this.user.email = ''
+      this.userFeed = [{}]
+      firebase.auth().signOut().then(function() {
+          // Sign-out successful.
+        }).catch(function(error) {
+          // An error happened.
+      })
     },
 
-    async addProduct(uid, pic) {
-      if(!this.all.posts) this.all.posts = []
-      if(!this.userProduct.pics){
-        this.userProduct.pics = []
-      }else{
+    async addProduct(index) {
         if(this.productInput !== '') {
-          this.userProduct.pics.unshift(this.productInput)
-          this.all.posts.unshift(this.productInput)
-          this.all.email = this.userProduct.email
-          this.all.uid = this.userProduct.uid
-          
+          this.userFeed.unshift({posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.photoUrl})
+          this.all.unshift({posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.photoUrl})
         }
-        firebase.database().ref('users/'+this.userProduct.uid).set({
-        	data: this.userProduct
-        }),
-        await firebase.database().ref('posts/').set({
+
+        await firebase.database().ref('posted/').set({
         	data: this.all
+        }),
+
+        firebase.database().ref('postos/').set({
+        	data: this.userFeed
         }),
         this.productInput=''
-      }
-      
     },
 
-    removeProduct(index) {
-        this.userProduct.pics.splice(index, 1)
-        this.all.posts.splice(index, 1)
-
-        firebase.database().ref('users/'+this.userProduct.uid).set({
-        	data: this.userProduct
-        }),
-        firebase.database().ref('posts/').set({
-        	data: this.all
-        })
+    async removeProduct(index) {
+      this.userFeed.splice(index.posts, 1)
+      this.all.splice(index.posts, 1)
+        
+      firebase.database().ref('postos/').set({
+        data: this.userFeed
+      }),
+      await firebase.database().ref('posted/').set({
+        data: this.all
+      })
     },
 
-    async setAvatar() {
+    setAvatar() {
+      let User = firebase.auth().currentUser
     	if(this.enterSuccess) {
-        this.userProduct.avatarUrl = this.userAvatar
-        this.all.avatarUrl = this.userProduct.avatarUrl
-
-    		firebase.database().ref('users/'+this.userProduct.uid).set({
-        	data: this.userProduct
-        }),
-        await firebase.database().ref('posts/').set({
-        	data: this.all
-        }),
-        this.userAvatar = ''
+        User.updateProfile({
+          photoURL: this.userAvatar
+        })
+        .then(()=>{
+          this.photoUrl = User.photoURL
+          this.userAvatar = ''
+        })
     	}
-
     },
   },
 
@@ -355,7 +349,7 @@ methods: {
     document.addEventListener('click', function () {
       vm.drawer=false;
     });
-    const takePosts = firebase.database().ref('/posted/')
+    const takePosts = firebase.database().ref('/posted/data')
 			takePosts.once('value', (snapshot)=> {
 			  if(snapshot.val()!==null) {
           this.all = snapshot.val()
