@@ -3,7 +3,6 @@ import App from './App'
 import router from './router'
 import Vuetify from 'vuetify'
 import('../node_modules/vuetify/dist/vuetify.min.css')
-import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import store from './store'
 
 const db = firebase.initializeApp({ 

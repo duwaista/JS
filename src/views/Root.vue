@@ -117,35 +117,36 @@
 </v-card>
 <br>
 
-<div align="center" v-for="(index) in userFeed" :key="index.posts">
+<div align="center" v-for="(post,index) in userFeed" :key="post.id">
+  {{index}}
 <!-- Desktop version with auth -->
-<v-card outlined class="d-none d-lg-block" height="100%" width="55%">
+<v-card v-if="!isMobile" outlined height="100%" width="55%">
   <v-list-item>
-	  <v-list-item-avatar v-if="index.avatarUrl">
-			<img :src= "index.avatarUrl">
+	  <v-list-item-avatar v-if="post.avatarUrl">
+			<img :src= "post.avatarUrl">
 	  </v-list-item-avatar>
-    <v-card-title>{{index.email}}</v-card-title>
+    <v-card-title>{{post.email}}</v-card-title>
       <v-spacer></v-spacer>
     <v-btn icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
     </v-btn>
 	</v-list-item>
-  <v-img height="95%" width="97%" :src = index.posts></v-img>
+  <v-img loading="lazy" height="95%" width="97%" :src = post.posts></v-img>
 </v-card>
 
 <!-- Mobile version with auth -->
-<v-card class="d-lg-none" height="90%" width="97%">  
+<v-card v-if="isMobile" height="90%" width="97%">  
 	<v-list-item>
-	  <v-list-item-avatar v-if="index.avatarUrl">
-			<img :src= "index.avatarUrl">
+	  <v-list-item-avatar v-if="post.avatarUrl">
+			<img :src= "post.avatarUrl">
 	  </v-list-item-avatar>
-      {{index.email}}
+      {{post.email}}
       <v-spacer></v-spacer>
     <v-btn icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
     </v-btn>
 	</v-list-item>
-  <v-img height="80%" max-width="100%" :src = index.posts></v-img>
+  <v-img loading="lazy" height="80%" max-width="100%" :src = post.posts></v-img>
 </v-card>
 <br>
 </div>
@@ -156,28 +157,29 @@
 </div>
 
 <div v-if="!loading" v-show="!enterSuccess" align="center">
-<div v-for="(index) in all" :key="index.posts">
+<div v-for="(feed, idx) in all" :key="feed.id">
+  {{idx}}
 <!-- Desktop version -->
-<v-card outlined class="d-none d-lg-block" height="100%" width="55%">
+<v-card v-if="!isMobile" outlined height="100%" width="55%">
   <v-list-item>
-	  <v-list-item-avatar v-if="index.avatarUrl">
-			<img :src= "index.avatarUrl">
+	  <v-list-item-avatar v-if="feed.avatarUrl">
+			<img :src= "feed.avatarUrl">
 	  </v-list-item-avatar>
-    <v-card-title>{{ index.email }}</v-card-title>
-    
+    <v-card-title>{{ feed.email }}</v-card-title>
 	</v-list-item>
-<v-img height="95%" width="97%" :src = index.posts></v-img>
+<v-img loading="lazy" height="95%" width="97%" :src = feed.posts></v-img>
 </v-card>
 
 <!-- Mobile version -->
-<v-card class="d-lg-none" height="90%" width="97%">
+<v-card v-if="isMobile" height="90%" width="97%">
   <v-list-item>
-	  <v-list-item-avatar v-if="index.avatarUrl">
-			<img :src= "index.avatarUrl">
+	  <v-list-item-avatar v-if="feed.avatarUrl">
+			<img :src= "feed.avatarUrl">
 	  </v-list-item-avatar>
-    <v-card-title>{{index.email}}</v-card-title>
+    <v-card-title>{{feed.email}}</v-card-title>
+    <v-spacer></v-spacer> {{feed.id}}
 	</v-list-item>
-<v-img height="80%" max-width="100%" :src = index.posts></v-img>
+<v-img loading="lazy" height="80%" max-width="100%" :src = feed.posts></v-img>
 </v-card>
 <br>
 </div>
@@ -186,7 +188,6 @@
 </div>
 </template>
 <script>
-import '@/components/style.css'
 import dialogComponent from '@/components/Dialog.vue'
   export default {
     components: {
@@ -218,8 +219,12 @@ import dialogComponent from '@/components/Dialog.vue'
         inDialog: false,
         upDialog: false,
         loading: true,
+        isMobile: Boolean,
+        postIdF: '',
+        postIdA: '',
 
         userFeed: [{
+          id: '',
           posts: '',
           uid: '',
           email: '',
@@ -227,6 +232,7 @@ import dialogComponent from '@/components/Dialog.vue'
         }],
 
         all: [{
+          id: 0,
           posts: '',
           uid: '',
           email: '',
@@ -236,7 +242,7 @@ import dialogComponent from '@/components/Dialog.vue'
   },
 
 methods: {
-    async enterUser() {
+    async enterUser(index) {
       if(this.user.email != null || this.user.password != null){
         firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
       .then( (response)=> {
@@ -247,7 +253,7 @@ methods: {
         this.user.email = response.user.email
         this.photoUrl = response.user.photoURL
 
-        const takeProduct = firebase.database().ref('/posted/data')
+        const takeProduct = firebase.database().ref('/postos/data')
 			  takeProduct.once('value', (snapshot)=> {
 			    if(snapshot.val()!==null) {
             this.userFeed = snapshot.val()
@@ -269,10 +275,10 @@ methods: {
     },
 
     registerUser() {
-        if(this.newUser.password !== this.newUser.confirmPassword || this.newUser.password.length<6 || this.newUser.password == '' || this.newUser.confirmPassword == '' || this.newUser.email == ''){
-          this.error = true
-          this.success = false
-        }else{
+      if(this.newUser.password !== this.newUser.confirmPassword || this.newUser.password.length<6 || this.newUser.password == '' || this.newUser.confirmPassword == '' || this.newUser.email == ''){
+        this.error = true
+        this.success = false
+      }else{
 
       firebase.auth().createUserWithEmailAndPassword(this.newUser.email, this.newUser.password)
         .then( ()=> {
@@ -294,7 +300,7 @@ methods: {
       this.user.uid = ''
       this.userAvatar = ''
       this.user.email = ''
-      this.userFeed = [{}]
+      this.userFeed = {}
       firebase.auth().signOut().then(function() {
           // Sign-out successful.
         }).catch(function(error) {
@@ -304,8 +310,10 @@ methods: {
 
     async addProduct(index) {
         if(this.productInput !== '') {
-          this.userFeed.unshift({posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.photoUrl})
-          this.all.unshift({posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.photoUrl})
+          this.postIdF = this.userFeed[0].id + 1
+          this.postIdA = this.all[0].id + 1
+          this.userFeed.unshift({id: this.postIdF, posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.photoUrl})
+          this.all.unshift({id: this.postIdA, posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.photoUrl})
         }
 
         await firebase.database().ref('posted/').set({
@@ -319,17 +327,13 @@ methods: {
     },
 
     async removeProduct(index) {
-      this.userFeed.splice(index.posts, 1)
-      this.all.splice(index.posts, 1)
-        
-      firebase.database().ref('postos/').set({
+      delete this.userFeed[index]
+      this.userFeed = this.userFeed.filter(element=>element !== undefined)
+     
+      await firebase.database().ref('postos/').set({
         data: this.userFeed
-      }),
-      await firebase.database().ref('posted/').set({
-        data: this.all
       })
     },
-
     setAvatar() {
       let User = firebase.auth().currentUser
     	if(this.enterSuccess) {
@@ -342,9 +346,17 @@ methods: {
         })
     	}
     },
+    resizeUpdate() {
+      if(this.$vuetify.breakpoint.name == 'xs' || this.$vuetify.breakpoint.name == 'sm'){
+        this.isMobile = true
+      }else{
+        this.isMobile = false
+      }
+    }
   },
 
   created() {
+    window.addEventListener('resize', this.resizeUpdate, {passive: true})
     let vm = this;
     document.addEventListener('click', function () {
       vm.drawer=false;
@@ -385,4 +397,16 @@ methods: {
 }
 
 </script>
+
+<style>
+input {
+  width: 300px;
+  padding: 9px;
+}
+div.container{
+  padding: 0px;
+  max-width: 100%;
+}
+</style>
+
 
