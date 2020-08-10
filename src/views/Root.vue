@@ -116,49 +116,14 @@
   </form>
 </v-card>
 <br>
-
-<div align="center" v-for="(post,index) in userFeed" :key="post.id">
-  {{index}}
-<!-- Desktop version with auth -->
-<v-card v-if="!isMobile" outlined height="100%" width="55%">
-  <v-list-item>
-	  <v-list-item-avatar v-if="post.avatarUrl">
-			<img :src= "post.avatarUrl">
-	  </v-list-item-avatar>
-    <v-card-title>{{post.email}}</v-card-title>
-      <v-spacer></v-spacer>
-    <v-btn icon @click="removeProduct(index)">
-      <v-icon>mdi-close</v-icon>
-    </v-btn>
-	</v-list-item>
-  <v-img loading="lazy" height="95%" width="97%" :src = post.posts></v-img>
-</v-card>
-
-<!-- Mobile version with auth -->
-<v-card v-if="isMobile" height="90%" width="97%">  
-	<v-list-item>
-	  <v-list-item-avatar v-if="post.avatarUrl">
-			<img :src= "post.avatarUrl">
-	  </v-list-item-avatar>
-      {{post.email}}
-      <v-spacer></v-spacer>
-    <v-btn icon @click="removeProduct(index)">
-      <v-icon>mdi-close</v-icon>
-    </v-btn>
-	</v-list-item>
-  <v-img loading="lazy" height="80%" max-width="100%" :src = post.posts></v-img>
-</v-card>
-<br>
-</div>
 </div>
 
 <div v-if="loading" align="center">
-<v-progress-circular color="primary" :indeterminate="true"></v-progress-circular>
+  <v-progress-circular color="primary" :indeterminate="true"></v-progress-circular>
 </div>
 
-<div v-if="!loading" v-show="!enterSuccess" align="center">
-<div v-for="(feed, idx) in all" :key="feed.id">
-  {{idx}}
+<div v-if="!loading" align="center">
+<div v-for="(feed, index) in all" :key="feed.id">
 <!-- Desktop version -->
 <v-card v-if="!isMobile" outlined height="100%" width="55%">
   <v-list-item>
@@ -166,6 +131,10 @@
 			<img :src= "feed.avatarUrl">
 	  </v-list-item-avatar>
     <v-card-title>{{ feed.email }}</v-card-title>
+    <v-spacer></v-spacer>
+    <v-btn v-if="enterSuccess && feed.uid == user.uid" icon @click="removeProduct(index)">
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
 	</v-list-item>
 <v-img loading="lazy" height="95%" width="97%" :src = feed.posts></v-img>
 </v-card>
@@ -177,7 +146,10 @@
 			<img :src= "feed.avatarUrl">
 	  </v-list-item-avatar>
     <v-card-title>{{feed.email}}</v-card-title>
-    <v-spacer></v-spacer> {{feed.id}}
+    <v-spacer></v-spacer>
+    <v-btn v-if ="enterSuccess && feed.uid == user.uid" icon @click="removeProduct(index)">
+      <v-icon>mdi-close</v-icon>
+    </v-btn>
 	</v-list-item>
 <v-img loading="lazy" height="80%" max-width="100%" :src = feed.posts></v-img>
 </v-card>
@@ -219,17 +191,8 @@ import dialogComponent from '@/components/Dialog.vue'
         inDialog: false,
         upDialog: false,
         loading: true,
+        postId: 0,
         isMobile: Boolean,
-        postIdF: '',
-        postIdA: '',
-
-        userFeed: [{
-          id: '',
-          posts: '',
-          uid: '',
-          email: '',
-          avatarUrl: '',
-        }],
 
         all: [{
           id: 0,
@@ -246,28 +209,18 @@ methods: {
       if(this.user.email != null || this.user.password != null){
         firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
       .then( (response)=> {
-        this.enterSuccess = true
-        this.enterError = false
         this.inDialog = false
         this.user.uid = response.user.uid
         this.user.email = response.user.email
         this.photoUrl = response.user.photoURL
-
-        const takeProduct = firebase.database().ref('/postos/data')
-			  takeProduct.once('value', (snapshot)=> {
-			    if(snapshot.val()!==null) {
-            this.userFeed = snapshot.val()
-          }else{
-            console.log("no data")
-          }
-        })
+        this.enterSuccess = true
+        this.enterError = false
       })
       .catch( (Error)=> {
         console.log(Error)
         this.enterError=true
         this.enterSuccess=false
       })
-
       }else{
         this.enterError=true
         this.enterSuccess=false
@@ -300,7 +253,6 @@ methods: {
       this.user.uid = ''
       this.userAvatar = ''
       this.user.email = ''
-      this.userFeed = {}
       firebase.auth().signOut().then(function() {
           // Sign-out successful.
         }).catch(function(error) {
@@ -309,29 +261,23 @@ methods: {
     },
 
     async addProduct(index) {
-        if(this.productInput !== '') {
-          this.postIdF = this.userFeed[0].id + 1
-          this.postIdA = this.all[0].id + 1
-          this.userFeed.unshift({id: this.postIdF, posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.photoUrl})
-          this.all.unshift({id: this.postIdA, posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.photoUrl})
-        }
+      if(this.productInput !== '') {
+        this.postId = this.all[0].id + 1
+        this.all.unshift({id: this.postId, posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.photoUrl})
+      }
 
-        await firebase.database().ref('posted/').set({
-        	data: this.all
-        }),
-
-        firebase.database().ref('postos/').set({
-        	data: this.userFeed
-        }),
-        this.productInput=''
+      await firebase.database().ref('posted/').set({
+        data: this.all
+      })
+      this.productInput=''
     },
 
     async removeProduct(index) {
-      delete this.userFeed[index]
-      this.userFeed = this.userFeed.filter(element=>element !== undefined)
+      delete this.all[index]
+      this.all = this.all.filter(element=>element !== undefined)
      
-      await firebase.database().ref('postos/').set({
-        data: this.userFeed
+      await firebase.database().ref('posted/').set({
+        data: this.all
       })
     },
     setAvatar() {
