@@ -5,8 +5,7 @@
 <dialogComponent 
   :enterSuccess = this.enterSuccess 
   :email = this.user.email
->
-</dialogComponent>
+/>
 
 <v-app-bar
   app
@@ -15,24 +14,22 @@
   >
   <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
   <template>
-  <v-toolbar-title>
-    </v-toolbar-title>
-      <v-spacer></v-spacer>
-        <v-toolbar-items v-if="enterSuccess">
-            <v-btn icon @click="logoutUser">
-                <v-icon>mdi-logout</v-icon>
-            </v-btn>
-            <v-list-item-avatar v-if="photoUrl">
-              <img :src= "photoUrl">
-            </v-list-item-avatar>
-        </v-toolbar-items>
-      <v-toolbar-items v-if="!enterSuccess">
-        <v-btn class="d-lg-none " text @click.stop="inDialog = true"><v-icon>mdi-login</v-icon></v-btn>
-        <v-btn class="d-none d-lg-block" text @click.stop="inDialog = true">Sign-in</v-btn>
-        <v-btn class="d-none d-lg-block" text @click.stop="upDialog = true">Sign-up</v-btn>
+    <v-spacer/>
+      <v-toolbar-items v-if="enterSuccess">
+        <v-btn icon @click="logoutUser">
+          <v-icon>mdi-logout</v-icon>
+        </v-btn>
+        <v-list-item-avatar v-if="photoUrl">
+          <v-img aspect-ratio="1.0" :src= "photoUrl"/>
+        </v-list-item-avatar>
       </v-toolbar-items>
-    </template>
-  </v-app-bar>
+    <v-toolbar-items v-if="!enterSuccess">
+      <v-btn class="d-lg-none " text @click.stop="inDialog = true"><v-icon>mdi-login</v-icon></v-btn>
+      <v-btn class="d-none d-lg-block" text @click.stop="inDialog = true">Sign-in</v-btn>
+      <v-btn class="d-none d-lg-block" text @click.stop="upDialog = true">Sign-up</v-btn>
+    </v-toolbar-items>
+  </template>
+</v-app-bar>
 </div>
 
 <v-card flat height="48px">
@@ -63,8 +60,9 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn  color="blue darken-1" text @click="inDialog = false, enterError = false">Close</v-btn>
-          <v-btn color="blue darken-1" text @click="enterUser">Enter</v-btn>
+          <v-btn color="blue darken-1" text @click="inDialog = false">Close</v-btn>
+          <v-btn v-if="user.email && user.password" color="blue darken-1" text @click="enterUser">Enter</v-btn>
+          <v-btn v-else color="blue darken-1" text disabled @click="enterUser">Enter</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -97,7 +95,8 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="upDialog = false, success = false, error = false">Close</v-btn>
-          <v-btn color="blue darken-1" text @click="registerUser">Register</v-btn>
+          <v-btn v-if="newUser.email && newUser.password && newUser.conformPassword" color="blue darken-1" text @click="registerUser">Register</v-btn>
+          <v-btn v-else color="blue darken-1" text disabled @click="registerUser">Register</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -112,7 +111,6 @@
      <br>
     <input @keyup.enter="setAvatar" autocomplete="none" type="text" v-model="userAvatar" placeholder="Set avatar URL">
     <v-btn @click="setAvatar">set</v-btn>
-    <v-btn @click="dark = !dark">Dark</v-btn>
   </form>
 </v-card>
 <br>
@@ -128,7 +126,7 @@
 <v-card v-if="!isMobile" outlined height="100%" width="55%">
   <v-list-item>
 	  <v-list-item-avatar v-if="feed.avatarUrl">
-			<img :src= "feed.avatarUrl">
+			<v-img aspect-ratio="1.0" :src= "feed.avatarUrl"></v-img>
 	  </v-list-item-avatar>
     <v-card-title>{{ feed.email }}</v-card-title>
     <v-spacer></v-spacer>
@@ -143,7 +141,7 @@
 <v-card v-if="isMobile" height="90%" width="97%">
   <v-list-item>
 	  <v-list-item-avatar v-if="feed.avatarUrl">
-			<img :src= "feed.avatarUrl">
+			<v-img aspect-ratio="1.0" :src= "feed.avatarUrl"></v-img>
 	  </v-list-item-avatar>
     <v-card-title>{{feed.email}}</v-card-title>
     <v-spacer></v-spacer>
@@ -168,8 +166,8 @@ import dialogComponent from '@/components/Dialog.vue'
   	props: {
       source: String
     },
-      data () {
-          return {
+    data () {
+      return {
         user: {
           email: '',
           password: '',
@@ -205,11 +203,13 @@ import dialogComponent from '@/components/Dialog.vue'
   },
 
 methods: {
-    async enterUser(index) {
+    async enterUser() {
+      this.loading = true
       if(this.user.email != null || this.user.password != null){
         firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
       .then( (response)=> {
         this.inDialog = false
+        this.loading = false
         this.user.uid = response.user.uid
         this.user.email = response.user.email
         this.photoUrl = response.user.photoURL
@@ -315,8 +315,11 @@ methods: {
     })
     .then( ()=> {
       this.loading = false
-      
     })
+  },
+
+  mounted(){
+    this.resizeUpdate()
   },
 
   computed: {
