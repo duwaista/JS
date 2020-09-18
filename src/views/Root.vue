@@ -2,10 +2,7 @@
 <div>
 <div class="Header">
   
-<dialogComponent 
-  :enterSuccess = this.enterSuccess 
-  :email = this.user.email
-/>
+<drawerComponent/>
 
 <v-app-bar
   app
@@ -19,13 +16,13 @@
         <v-btn icon @click="logoutUser">
           <v-icon>mdi-logout</v-icon>
         </v-btn>
-        <v-list-item-avatar v-if="photoUrl">
-          <v-img aspect-ratio="1.0" :src= "photoUrl"/>
+        <v-list-item-avatar v-if="user.photoURL">
+          <v-img aspect-ratio="1.0" :src= "user.photoURL"/>
         </v-list-item-avatar>
       </v-toolbar-items>
     <v-toolbar-items v-if="!enterSuccess">
-      <v-btn class="d-lg-none " text @click.stop="inDialog = true"><v-icon>mdi-login</v-icon></v-btn>
-      <v-btn class="d-none d-lg-block" text @click.stop="inDialog = true">Sign-in</v-btn>
+      <v-btn class="d-lg-none " text @click.stop="$store.state.inDialog = true"><v-icon>mdi-login</v-icon></v-btn>
+      <v-btn class="d-none d-lg-block" text @click.stop="$store.state.inDialog = true">Sign-in</v-btn>
       <v-btn class="d-none d-lg-block" text @click.stop="upDialog = true">Sign-up</v-btn>
     </v-toolbar-items>
   </template>
@@ -38,35 +35,7 @@
 <br>
 
 <!-- Sign-in dialog -->
-  <v-row justify="center">
-    <v-dialog v-model="inDialog" persistent max-width="500px">
-      <v-card>
-        <v-card-title>
-          <span class="headline">Sign-in</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field @keyup.enter="enterUser" clearable v-model="user.email" label="Email" type="email" required></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field @keyup.enter="enterUser" clearable v-model="user.password" label="Password" type="password" required></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-          <v-alert type="error" v-if="enterError">Error</v-alert>
-          <v-btn justify="end" class="d-lg-none" text @click="upDialog = true, inDialog = false"><small>Зарегистрироваться</small></v-btn>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="inDialog = false">Close</v-btn>
-          <v-btn v-if="user.email && user.password" color="blue darken-1" text @click="enterUser">Enter</v-btn>
-          <v-btn v-else color="blue darken-1" text disabled @click="enterUser">Enter</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
+<signindialog/>
 
 <!-- Sign-up dialog -->
   <v-row justify="center">
@@ -130,7 +99,7 @@
 	  </v-list-item-avatar>
     <v-card-title>{{ feed.email }}</v-card-title>
     <v-spacer></v-spacer>
-    <v-btn v-if="enterSuccess && feed.uid == user.uid" icon @click="removeProduct(index)">
+    <v-btn v-if="enterSuccess && feed.uid == $store.state.user.uid" icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
     </v-btn>
 	</v-list-item>
@@ -145,7 +114,7 @@
 	  </v-list-item-avatar>
     <v-card-title>{{feed.email}}</v-card-title>
     <v-spacer></v-spacer>
-    <v-btn v-if ="enterSuccess && feed.uid == user.uid" icon @click="removeProduct(index)">
+    <v-btn v-if ="enterSuccess && feed.uid == $store.state.user.uid" icon @click="removeProduct(index)">
       <v-icon>mdi-close</v-icon>
     </v-btn>
 	</v-list-item>
@@ -158,35 +127,29 @@
 </div>
 </template>
 <script>
-import dialogComponent from '@/components/Dialog.vue'
+import drawerComponent from '@/components/Drawer.vue'
+import signindialog from '@/components/SignInDialog.vue'
   export default {
     components: {
-      dialogComponent
+      drawerComponent,
+      signindialog
     },
   	props: {
       source: String
     },
     data () {
       return {
-        user: {
-          email: '',
-          password: '',
-          uid: ''
-        },
         newUser: {
           email: '',
           password: '',
           confirmPassword: ''
         },
 
-        enterSuccess: false,
         enterError: false,
         error: false,
         success: false,
         productInput: '',
         userAvatar: '',
-        photoUrl: '',
-        inDialog: false,
         upDialog: false,
         loading: true,
         postId: 0,
@@ -203,30 +166,7 @@ import dialogComponent from '@/components/Dialog.vue'
   },
 
 methods: {
-    async enterUser() {
-      this.loading = true
-      if(this.user.email != null || this.user.password != null){
-        firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
-      .then( (response)=> {
-        this.inDialog = false
-        this.loading = false
-        this.user.uid = response.user.uid
-        this.user.email = response.user.email
-        this.photoUrl = response.user.photoURL
-        this.enterSuccess = true
-        this.enterError = false
-      })
-      .catch( (Error)=> {
-        console.log(Error)
-        this.enterError=true
-        this.enterSuccess=false
-      })
-      }else{
-        this.enterError=true
-        this.enterSuccess=false
-      }
-    },
-
+    
     registerUser() {
       if(this.newUser.password !== this.newUser.confirmPassword || this.newUser.password.length<6 || this.newUser.password == '' || this.newUser.confirmPassword == '' || this.newUser.email == ''){
         this.error = true
@@ -248,11 +188,12 @@ methods: {
 
     logoutUser() {
     	this.enterSuccess = false
-      this.photoUrl = ''
-      this.user.password = ''
-      this.user.uid = ''
+      this.user.photoURL = ''
+      this.$store.state.user.password = ''
+      this.$store.state.user.uid = ''
       this.userAvatar = ''
-      this.user.email = ''
+      this.$store.state.user.email = ''
+      console.log(this.$store.state.user.email)
       firebase.auth().signOut().then(function() {
           // Sign-out successful.
         }).catch(function(error) {
@@ -263,7 +204,7 @@ methods: {
     async addProduct(index) {
       if(this.productInput !== '') {
         this.postId = this.all[0].id + 1
-        this.all.unshift({id: this.postId, posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.photoUrl})
+        this.all.unshift({id: this.postId, posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.user.photoURL})
       }
 
       await firebase.database().ref('posted/').set({
@@ -272,11 +213,11 @@ methods: {
       this.productInput=''
     },
 
-    async removeProduct(index) {
+    removeProduct(index) {
       delete this.all[index]
       this.all = this.all.filter(element=>element !== undefined)
      
-      await firebase.database().ref('posted/').set({
+      firebase.database().ref('posted/').set({
         data: this.all
       })
     },
@@ -287,7 +228,7 @@ methods: {
           photoURL: this.userAvatar
         })
         .then(()=>{
-          this.photoUrl = User.photoURL
+          this.user.photoURL = User.photoURL
           this.userAvatar = ''
         })
     	}
@@ -312,7 +253,7 @@ methods: {
 			  if(snapshot.val()!==null) {
           this.all = snapshot.val()
         }
-    })
+      })
     .then( ()=> {
       this.loading = false
     })
@@ -323,28 +264,33 @@ methods: {
   },
 
   computed: {
-    dark: {
-      get() {
-        return this.$store.state.dark
-      },
-      set(v) {
-        this.$store.commit('setDark', v)
-        this.$vuetify.theme.dark = v
-      }
-    },
-
     drawer: {
       get() {
         return this.$store.state.drawer
       },
       set(w) {
         this.$store.state.drawer = w
-
+      }
+    },
+    enterSuccess: {
+      get() {
+        return this.$store.state.enterSuccess
+      },
+      set(s) {
+        this.$store.commit('enterSuccess', s)
+      }
+    },
+    user: {
+      get() {
+        return this.$store.state.user
+      },
+      set(u) {
+        this.$store.commit('setUser', u)
+        this.$store.state.user = u
       }
     }
   }
 }
-
 </script>
 
 <style>

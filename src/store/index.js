@@ -6,7 +6,15 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
         dark: false,
-        drawer: false
+        drawer: false,
+        inDialog: false,
+        user: {
+            email: '',
+            password: '',
+            uid: '',
+            photoURL: '',
+        },
+        enterSuccess: false
     },
 
     mutations: {
@@ -16,6 +24,15 @@ export default new Vuex.Store({
 
         setDrawer(state, r) {
             state.drawer = r
+        },
+        setUser(state, u) {
+            state.user = u
+        },
+        enterSuccess(state, s) {
+            state.enterSuccess = s
+        },
+        openInDialog(state, i) {
+            state.inDialog = i
         }
     }
 })

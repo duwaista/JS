@@ -1,6 +1,6 @@
 {
-  "name": "Singular",
-  "version": "0.3.2",
+  "name": "singular",
+  "version": "0.3.3",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -21,6 +21,8 @@
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
     "vue-template-compiler": "^2.6.11",
-    "webpack": "^4.43.0"
+    "webpack": "^4.43.0",
+    "webpack-dev-server": "^3.1.11",
+    "webpack-bundle-analyzer": "^3.3.2"
   }
 }
