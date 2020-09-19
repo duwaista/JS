@@ -38,38 +38,7 @@
 <signindialog/>
 
 <!-- Sign-up dialog -->
-  <v-row justify="center">
-    <v-dialog v-model="upDialog" persistent max-width="600px">
-      <v-card>
-        <v-card-title>
-          <span class="headline">Sign-up</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field clearable v-model="newUser.email" label="Email" type="email" required></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field clearable v-model="newUser.password" label="Password" type="password" required></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field textContentType = 'password' clearable v-model="newUser.confirmPassword" label="Confirm password" type="password" required></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-          <v-alert type="success" v-if="success">Успешно. Теперь вы можете войти в систему!</v-alert>
-          <v-alert type="error" v-if="error">Пароли не совпадают или содержат менее 6 символов</v-alert>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="upDialog = false, success = false, error = false">Close</v-btn>
-          <v-btn v-if="newUser.email && newUser.password && newUser.conformPassword" color="blue darken-1" text @click="registerUser">Register</v-btn>
-          <v-btn v-else color="blue darken-1" text disabled @click="registerUser">Register</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-row>
+<signUpDialog v-if="$store.state.upDialog"/>
 
 <!-- Settings -->
 <div v-if="enterSuccess" align="center">
@@ -129,25 +98,20 @@
 <script>
 import drawerComponent from '@/components/Drawer.vue'
 import signindialog from '@/components/SignInDialog.vue'
+const signUpDialog = () => import('@/components/SignUpDialog.vue')
+//import signUpDialog from '@/components/SignUpDialog.vue'
   export default {
     components: {
       drawerComponent,
-      signindialog
+      signindialog,
+      signUpDialog
     },
   	props: {
       source: String
     },
     data () {
       return {
-        newUser: {
-          email: '',
-          password: '',
-          confirmPassword: ''
-        },
-
         enterError: false,
-        error: false,
-        success: false,
         productInput: '',
         userAvatar: '',
         upDialog: false,
@@ -166,26 +130,6 @@ import signindialog from '@/components/SignInDialog.vue'
   },
 
 methods: {
-    
-    registerUser() {
-      if(this.newUser.password !== this.newUser.confirmPassword || this.newUser.password.length<6 || this.newUser.password == '' || this.newUser.confirmPassword == '' || this.newUser.email == ''){
-        this.error = true
-        this.success = false
-      }else{
-
-      firebase.auth().createUserWithEmailAndPassword(this.newUser.email, this.newUser.password)
-        .then( ()=> {
-          this.success=true
-          this.error=false
-          this.newUser.password = ''
-          this.newUser.confirmPassword = ''
-          this.newUser.email = ''
-        })
-        .catch( error =>{
-        })
-      }
-    },
-
     logoutUser() {
     	this.enterSuccess = false
       this.user.photoURL = ''
@@ -193,7 +137,6 @@ methods: {
       this.$store.state.user.uid = ''
       this.userAvatar = ''
       this.$store.state.user.email = ''
-      console.log(this.$store.state.user.email)
       firebase.auth().signOut().then(function() {
           // Sign-out successful.
         }).catch(function(error) {

@@ -17,7 +17,7 @@
             </v-row>
           </v-container>
           <v-alert type="error" v-if="enterError">Error</v-alert>
-          <v-btn justify="end" class="d-lg-none" text @click="upDialog = true, $store.state.inDialog = false"><small>Зарегистрироваться</small></v-btn>
+          <v-btn justify="end" class="d-lg-none" text @click="$store.state.upDialog = true, $store.state.inDialog = false"><small>Зарегистрироваться</small></v-btn>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -41,7 +41,7 @@ export default {
   },
   methods: {
     enterUser() {
-      if(this.$store.state.user.email != null || this.$store.state.user.password != null){
+      if(this.$store.state.user.email != null && this.$store.state.user.password != null){
         firebase.auth().signInWithEmailAndPassword(this.$store.state.user.email, this.$store.state.user.password)
         .then( (response)=> {
           this.$store.state.inDialog = false

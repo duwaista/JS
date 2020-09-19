@@ -8,6 +8,7 @@ export default new Vuex.Store({
         dark: false,
         drawer: false,
         inDialog: false,
+        upDialog: false,
         user: {
             email: '',
             password: '',
@@ -33,6 +34,9 @@ export default new Vuex.Store({
         },
         openInDialog(state, i) {
             state.inDialog = i
+        },
+        openUpDialog(state, p) {
+            state.upDialog = p
         }
     }
 })
