@@ -23,7 +23,7 @@
     <v-toolbar-items v-if="!enterSuccess">
       <v-btn class="d-lg-none " text @click.stop="$store.state.inDialog = true"><v-icon>mdi-login</v-icon></v-btn>
       <v-btn class="d-none d-lg-block" text @click.stop="$store.state.inDialog = true">Sign-in</v-btn>
-      <v-btn class="d-none d-lg-block" text @click.stop="upDialog = true">Sign-up</v-btn>
+      <v-btn class="d-none d-lg-block" text @click.stop="$store.state.upDialog = true">Sign-up</v-btn>
     </v-toolbar-items>
   </template>
 </v-app-bar>
@@ -58,7 +58,7 @@
   <v-progress-circular color="primary" :indeterminate="true"></v-progress-circular>
 </div>
 
-<div v-if="!loading" align="center">
+<div v-show="!loading" align="center">
 <div v-for="(feed, index) in all" :key="feed.id">
 <!-- Desktop version -->
 <v-card v-if="!isMobile" outlined height="100%" width="55%">

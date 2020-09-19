@@ -4,6 +4,7 @@ import router from './router'
 import Vuetify from 'vuetify'
 import('../node_modules/vuetify/dist/vuetify.min.css')
 import store from './store'
+import './registerServiceWorker'
 
 const db = firebase.initializeApp({ 
   apiKey: "AIzaSyBHXEKoASPtta_uQGwN2wb3UcXObF9GdZ8", 
