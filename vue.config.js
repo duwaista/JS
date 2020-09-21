@@ -10,5 +10,6 @@ module.exports = {
           maxSize: 210000,
         }
       }
-    }
+    },
+    
   }

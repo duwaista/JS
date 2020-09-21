@@ -9,14 +9,24 @@
           <v-icon>mdi-account</v-icon>
         </v-list-item-action>
         <v-list-item-content><v-list-item-title> {{$store.state.user.email}} </v-list-item-title></v-list-item-content>
-          <v-btn icon @click.stop="dark = !dark"><v-icon>mdi-white-balance-sunny</v-icon></v-btn>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn v-bind="attrs" v-on="on" icon @click.stop="dark = !dark"><v-icon>mdi-white-balance-sunny</v-icon></v-btn>
+          </template>
+          <span>Изменить тему</span>
+        </v-tooltip>
       </v-list-item> 
       <v-list-item dense link>
         <v-list-item-action>
           <v-icon>mdi-home</v-icon>
         </v-list-item-action>
         <v-list-item-content><v-list-item-title> Home </v-list-item-title></v-list-item-content>
-        <v-btn v-if="!$store.state.enterSuccess" icon @click.stop="dark = !dark"><v-icon>mdi-white-balance-sunny</v-icon></v-btn>
+        <v-tooltip v-if="!$store.state.enterSuccess" bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn v-bind="attrs" v-on="on" icon @click.stop="dark = !dark"><v-icon>mdi-white-balance-sunny</v-icon></v-btn>
+          </template>
+          <span>Изменить тему</span>
+        </v-tooltip>
       </v-list-item>
       <v-list-item dense link>
         <v-list-item-action>

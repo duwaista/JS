@@ -13,9 +13,14 @@
   <template>
     <v-spacer/>
       <v-toolbar-items v-if="enterSuccess">
-        <v-btn icon @click="logoutUser">
-          <v-icon>mdi-logout</v-icon>
-        </v-btn>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn v-bind="attrs" v-on="on" icon @click="logoutUser">
+              <v-icon>mdi-logout</v-icon>
+            </v-btn>
+          </template>
+          <span>Выйти</span>
+        </v-tooltip>
         <v-list-item-avatar v-if="user.photoURL">
           <v-img aspect-ratio="1.0" :src= "user.photoURL"/>
         </v-list-item-avatar>
@@ -99,7 +104,6 @@
 import drawerComponent from '@/components/Drawer.vue'
 import signindialog from '@/components/SignInDialog.vue'
 const signUpDialog = () => import('@/components/SignUpDialog.vue')
-//import signUpDialog from '@/components/SignUpDialog.vue'
   export default {
     components: {
       drawerComponent,
