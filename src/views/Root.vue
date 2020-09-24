@@ -161,11 +161,12 @@ methods: {
     },
 
     removeProduct(index) {
-      delete this.all[index]
-      this.all = this.all.filter(element=>element !== undefined)
-     
       firebase.database().ref('posted/').set({
         data: this.all
+      })
+      .then(() => {
+        delete this.all[index]
+        this.all = this.all.filter(element=>element !== undefined)
       })
     },
     setAvatar() {
@@ -186,6 +187,20 @@ methods: {
       }else{
         this.isMobile = false
       }
+    },
+    getData(filter) {
+      const takePosts = firebase.database().ref('/posted/data')
+			  takePosts.once('value', (snapshot)=> {
+			    if(snapshot.val()!==null || snapshot.val() != this.all) {
+            this.all = snapshot.val()
+            this.showButton = true
+          }else{
+            this.showButton = false
+          }
+        })
+      .then( ()=> {
+        this.loading = false
+      })
     }
   },
 
@@ -195,19 +210,11 @@ methods: {
     document.addEventListener('click', function () {
       vm.drawer=false;
     });
-    const takePosts = firebase.database().ref('/posted/data')
-			takePosts.once('value', (snapshot)=> {
-			  if(snapshot.val()!==null) {
-          this.all = snapshot.val()
-        }
-      })
-    .then( ()=> {
-      this.loading = false
-    })
   },
 
   mounted(){
     this.resizeUpdate()
+    this.getData()
   },
 
   computed: {
