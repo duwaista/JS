@@ -35,7 +35,7 @@
 
 <script>
 export default {
-    name: 'signUpDialog',
+    name: 'SignUpDialog',
     data() {
         return {
             newUser: {
@@ -58,9 +58,11 @@ export default {
                 .then( ()=> {
                     this.success=true
                     this.error=false
-                    this.newUser.password = ''
-                    this.newUser.confirmPassword = ''
-                    this.newUser.email = ''
+                    this.newUser = {
+                      password: '',
+                      confirmPassword: '',
+                      email: ''
+                    }
                 })
                 .catch( error =>{
                 })
@@ -75,7 +77,6 @@ export default {
             },
             set(p) {
                 this.$store.commit('openUpDialog', p)
-                this.$store.state.upDialog
             }
         }
     }

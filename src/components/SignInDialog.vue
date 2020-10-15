@@ -1,5 +1,5 @@
 <template>
-    <v-row justify="center">
+  <v-row justify="center">
     <v-dialog v-model="$store.state.inDialog" persistent max-width="500px">
       <v-card>
         <v-card-title>
@@ -9,10 +9,10 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field @keyup.enter="enterUser" clearable v-model="$store.state.user.email" label="Email" type="email" required></v-text-field>
+                <v-text-field @keyup.enter="enterUser" clearable v-model="user.email" label="Email" type="email" required></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-text-field @keyup.enter="enterUser" clearable v-model="$store.state.user.password" label="Password" type="password" required></v-text-field>
+                <v-text-field @keyup.enter="enterUser" clearable v-model="user.password" label="Password" type="password" required></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -22,7 +22,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="$store.state.inDialog = false">Close</v-btn>
-          <v-btn v-if="$store.state.user.email && $store.state.user.password" color="blue darken-1" text @click="enterUser">Enter</v-btn>
+          <v-btn v-if="user.email && user.password" color="blue darken-1" text @click="enterUser">Enter</v-btn>
           <v-btn v-else color="blue darken-1" text disabled @click="enterUser">Enter</v-btn>
         </v-card-actions>
       </v-card>
@@ -32,21 +32,34 @@
 
 <script>
 export default {
-  name: 'signindialog',
+  name: 'SignInDialog',
   props: {
     enterError: {
       type: Boolean,
       default: false
     }
   },
+  data() {
+    return {
+      user: {
+        email: '',
+        password: ''
+      }
+    }
+  },
   methods: {
     enterUser() {
-      if(this.$store.state.user.email != null && this.$store.state.user.password != null){
-        firebase.auth().signInWithEmailAndPassword(this.$store.state.user.email, this.$store.state.user.password)
+      if(this.user.email != null && this.user.password != null){
+        firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
         .then( (response)=> {
-          this.$store.state.inDialog = false
-          this.$store.state.user.uid = response.user.uid
-          this.$store.state.user.photoURL = response.user.photoURL
+          let u = {
+            email: this.user.email,
+            uid: response.user.uid,
+            photoURL: response.user.photoURL
+          }
+          this.$store.commit("setUser", u)
+          
+          this.$store.commit("openInDialog", false)
           this.loading = false
           this.$store.state.enterSuccess = true
           this.enterError = false
@@ -54,7 +67,7 @@ export default {
         .catch( (Error)=> {
           console.log(Error)
           this.enterError=true
-          this.$store.state.enterSuccess=false
+          this.$store.state.enterSuccess = false
           this.loading = false
         })
       }else{
@@ -63,18 +76,6 @@ export default {
         this.loading = false
       }
     },
-  },
-
-  computed: {
-    user: {
-      get() {
-        return this.$store.state.user
-      },
-      set(u) {
-        this.$store.commit('setUser', u)
-        this.$store.state.user = u
-      }
-    }
   }
 }
 </script>

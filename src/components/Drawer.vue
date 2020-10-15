@@ -50,7 +50,7 @@
 
 <script>
 export default {
-  name: 'drawerComponent',
+  name: 'DrawerComponent',
   computed: {
     drawer: {
       get() {

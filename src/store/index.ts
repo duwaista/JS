@@ -5,13 +5,12 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        dark: false,
+        dark: Boolean,
         drawer: false,
         inDialog: false,
         upDialog: false,
         user: {
             email: '',
-            password: '',
             uid: '',
             photoURL: '',
         },
@@ -22,7 +21,6 @@ export default new Vuex.Store({
         setDark(state, d) {
             state.dark = d
         },
-
         setDrawer(state, r) {
             state.drawer = r
         },

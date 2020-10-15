@@ -1,38 +1,9 @@
 <template>
 <div>
-<div class="Header">
-  
-<drawerComponent/>
 
-<v-app-bar
-  app
-  dense
-  position: fixed
-  >
-  <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-  <template>
-    <v-spacer/>
-      <v-toolbar-items v-if="enterSuccess">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn v-bind="attrs" v-on="on" icon @click="logoutUser">
-              <v-icon>mdi-logout</v-icon>
-            </v-btn>
-          </template>
-          <span>Выйти</span>
-        </v-tooltip>
-        <v-list-item-avatar v-if="user.photoURL">
-          <v-img aspect-ratio="1.0" :src= "user.photoURL"/>
-        </v-list-item-avatar>
-      </v-toolbar-items>
-    <v-toolbar-items v-if="!enterSuccess">
-      <v-btn class="d-lg-none " text @click.stop="$store.state.inDialog = true"><v-icon>mdi-login</v-icon></v-btn>
-      <v-btn class="d-none d-lg-block" text @click.stop="$store.state.inDialog = true">Sign-in</v-btn>
-      <v-btn class="d-none d-lg-block" text @click.stop="$store.state.upDialog = true">Sign-up</v-btn>
-    </v-toolbar-items>
-  </template>
-</v-app-bar>
-</div>
+<AppBarComponent/>
+
+<DrawerComponent/>
 
 <v-card flat height="48px">
   <v-card-title></v-card-title>
@@ -40,10 +11,10 @@
 <br>
 
 <!-- Sign-in dialog -->
-<signindialog/>
+<SignInDialog/>
 
 <!-- Sign-up dialog -->
-<signUpDialog v-if="$store.state.upDialog"/>
+<SignUpDialog v-if="$store.state.upDialog"/>
 
 <!-- Settings -->
 <div v-if="enterSuccess" align="center">
@@ -101,14 +72,16 @@
 </div>
 </template>
 <script>
-import drawerComponent from '@/components/Drawer.vue'
-import signindialog from '@/components/SignInDialog.vue'
-const signUpDialog = () => import('@/components/SignUpDialog.vue')
+import AppBarComponent from '@/components/AppBarComponent.vue'
+import DrawerComponent from '@/components/Drawer.vue'
+import SignInDialog from '@/components/SignInDialog.vue'
+const SignUpDialog = () => import('@/components/SignUpDialog.vue')
   export default {
     components: {
-      drawerComponent,
-      signindialog,
-      signUpDialog
+      AppBarComponent,
+      DrawerComponent,
+      SignInDialog,
+      SignUpDialog
     },
   	props: {
       source: String
@@ -122,7 +95,6 @@ const signUpDialog = () => import('@/components/SignUpDialog.vue')
         loading: true,
         postId: 0,
         isMobile: Boolean,
-
         all: [{
           id: 0,
           posts: '',
@@ -134,26 +106,11 @@ const signUpDialog = () => import('@/components/SignUpDialog.vue')
   },
 
 methods: {
-    logoutUser() {
-    	this.enterSuccess = false
-      this.user.photoURL = ''
-      this.$store.state.user.password = ''
-      this.$store.state.user.uid = ''
-      this.userAvatar = ''
-      this.$store.state.user.email = ''
-      firebase.auth().signOut().then(function() {
-          // Sign-out successful.
-        }).catch(function(error) {
-          // An error happened.
-      })
-    },
-
     async addProduct(index) {
       if(this.productInput !== '') {
         this.postId = this.all[0].id + 1
         this.all.unshift({id: this.postId, posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.user.photoURL})
       }
-
       await firebase.database().ref('posted/').set({
         data: this.all
       })
@@ -169,6 +126,7 @@ methods: {
         this.all = this.all.filter(element=>element !== undefined)
       })
     },
+
     setAvatar() {
       let User = firebase.auth().currentUser
     	if(this.enterSuccess) {
@@ -181,6 +139,7 @@ methods: {
         })
     	}
     },
+    
     resizeUpdate() {
       if(this.$vuetify.breakpoint.name == 'xs' || this.$vuetify.breakpoint.name == 'sm'){
         this.isMobile = true
@@ -188,15 +147,13 @@ methods: {
         this.isMobile = false
       }
     },
-    getData(filter) {
+
+    getData() {
       const takePosts = firebase.database().ref('/posted/data')
 			  takePosts.once('value', (snapshot)=> {
 			    if(snapshot.val()!==null || snapshot.val() != this.all) {
             this.all = snapshot.val()
-            this.showButton = true
-          }else{
-            this.showButton = false
-          }
+          }else{}
         })
       .then( ()=> {
         this.loading = false
@@ -208,7 +165,7 @@ methods: {
     window.addEventListener('resize', this.resizeUpdate, {passive: true})
     let vm = this;
     document.addEventListener('click', function () {
-      vm.drawer=false;
+      vm.drawer = false;
     });
   },
 
