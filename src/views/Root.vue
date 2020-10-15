@@ -27,7 +27,6 @@
     <v-btn @click="setAvatar">set</v-btn>
   </form>
 </v-card>
-<br>
 </div>
 
 <div v-if="loading" align="center">
@@ -35,7 +34,7 @@
 </div>
 
 <div v-show="!loading" align="center">
-<div v-for="(feed, index) in all" :key="feed.id">
+<div class="feed" v-for="(feed, index) in all" :key="feed.id">
 <!-- Desktop version -->
 <v-card v-if="!isMobile" outlined height="100%" width="55%">
   <v-list-item>
@@ -48,7 +47,7 @@
       <v-icon>mdi-close</v-icon>
     </v-btn>
 	</v-list-item>
-<v-img loading="lazy" height="95%" width="97%" :src = feed.posts></v-img>
+<v-img class="desktop-img" loading="lazy" height="95%" width="97%" :src = feed.posts></v-img>
 </v-card>
 
 <!-- Mobile version -->
@@ -65,7 +64,6 @@
 	</v-list-item>
 <v-img loading="lazy" height="80%" max-width="100%" :src = feed.posts></v-img>
 </v-card>
-<br>
 </div>
 </div>
 
@@ -118,12 +116,10 @@ methods: {
     },
 
     removeProduct(index) {
+      delete this.all[index]
+      this.all = this.all.filter(element=>element !== undefined)
       firebase.database().ref('posted/').set({
         data: this.all
-      })
-      .then(() => {
-        delete this.all[index]
-        this.all = this.all.filter(element=>element !== undefined)
       })
     },
 
@@ -212,6 +208,12 @@ input {
 div.container{
   padding: 0px;
   max-width: 100%;
+}
+.feed {
+  margin-bottom: 15px;
+}
+.desktop-img {
+  margin-bottom: 10px;
 }
 </style>
 

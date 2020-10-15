@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        dark: Boolean,
+        dark: false,
         drawer: false,
         inDialog: false,
         upDialog: false,
