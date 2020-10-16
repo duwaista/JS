@@ -5,10 +5,9 @@
 
 <DrawerComponent/>
 
-<v-card flat height="48px">
+<v-card class="fix" flat>
   <v-card-title></v-card-title>
 </v-card>
-<br>
 
 <!-- Sign-in dialog -->
 <SignInDialog/>
@@ -18,15 +17,15 @@
 
 <!-- Settings -->
 <div v-if="enterSuccess" align="center">
-<v-card>
-  <form>
-    <input @keyup.enter="addProduct" type="text" v-model="productInput" placeholder="URL изображения">
-     <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
-     <br>
-    <input @keyup.enter="setAvatar" autocomplete="none" type="text" v-model="userAvatar" placeholder="Set avatar URL">
-    <v-btn @click="setAvatar">set</v-btn>
-  </form>
-</v-card>
+  <v-card class="settings" v-bind:class="{ active: isMobile }">
+    <form>
+      <input @keyup.enter="addProduct" type="text" v-model="productInput" placeholder="URL изображения">
+      <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
+      <br>
+      <input @keyup.enter="setAvatar" autocomplete="none" type="text" v-model="userAvatar" placeholder="Set avatar URL">
+      <v-btn @click="setAvatar">set</v-btn>
+    </form>
+  </v-card>
 </div>
 
 <div v-if="loading" align="center">
@@ -34,37 +33,21 @@
 </div>
 
 <div v-show="!loading" align="center">
-<div class="feed" v-for="(feed, index) in all" :key="feed.id">
-<!-- Desktop version -->
-<v-card v-if="!isMobile" outlined height="100%" width="55%">
-  <v-list-item>
-	  <v-list-item-avatar v-if="feed.avatarUrl">
-			<v-img aspect-ratio="1.0" :src= "feed.avatarUrl"></v-img>
-	  </v-list-item-avatar>
-    <v-card-title>{{ feed.email }}</v-card-title>
-    <v-spacer></v-spacer>
-    <v-btn v-if="enterSuccess && feed.uid == $store.state.user.uid" icon @click="removeProduct(index)">
-      <v-icon>mdi-close</v-icon>
-    </v-btn>
-	</v-list-item>
-<v-img class="desktop-img" loading="lazy" height="95%" width="97%" :src = feed.posts></v-img>
-</v-card>
-
-<!-- Mobile version -->
-<v-card v-if="isMobile" height="90%" width="97%">
-  <v-list-item>
-	  <v-list-item-avatar v-if="feed.avatarUrl">
-			<v-img aspect-ratio="1.0" :src= "feed.avatarUrl"></v-img>
-	  </v-list-item-avatar>
-    <v-card-title>{{feed.email}}</v-card-title>
-    <v-spacer></v-spacer>
-    <v-btn v-if ="enterSuccess && feed.uid == $store.state.user.uid" icon @click="removeProduct(index)">
-      <v-icon>mdi-close</v-icon>
-    </v-btn>
-	</v-list-item>
-<v-img loading="lazy" height="80%" max-width="100%" :src = feed.posts></v-img>
-</v-card>
-</div>
+  <div class="feed-container" v-for="(feed, index) in all" :key="feed.id">
+    <v-card class="feed" v-bind:class="{ mobile: isMobile }" outlined>
+      <v-list-item>
+	      <v-list-item-avatar v-if="feed.avatarUrl">
+			    <v-img aspect-ratio="1.0" :src= "feed.avatarUrl"></v-img>
+	      </v-list-item-avatar>
+        <v-card-title>{{ feed.email }}</v-card-title>
+        <v-spacer></v-spacer>
+        <v-btn v-if="enterSuccess && feed.uid === $store.state.user.uid" icon @click="removeProduct(index)">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+	    </v-list-item>
+    <v-img class="feed-img" v-bind:class="{ mobileImg: isMobile }" loading="lazy" :src = feed.posts></v-img>
+    </v-card>
+  </div>
 </div>
 
 </div>
@@ -149,7 +132,7 @@ methods: {
 			  takePosts.once('value', (snapshot)=> {
 			    if(snapshot.val()!==null || snapshot.val() != this.all) {
             this.all = snapshot.val()
-          }else{}
+          }
         })
       .then( ()=> {
         this.loading = false
@@ -205,15 +188,42 @@ input {
   width: 300px;
   padding: 9px;
 }
-div.container{
+div.container {
   padding: 0px;
   max-width: 100%;
 }
-.feed {
-  margin-bottom: 15px;
-}
-.desktop-img {
+.settings {
+  width: 55%;
   margin-bottom: 10px;
+}
+.active {
+  height: 90%;
+  width: 97%;
+  margin-bottom: 10px;
+}
+.feed {
+  height: 100%;
+  width: 55%;
+}
+.mobile {
+  height: 90%;
+  width: 97%;
+}
+.mobileImg {
+  height: 80%;
+  max-width: 100%;
+}
+.feed-container {
+  margin-bottom: 10px;
+}
+.feed-img {
+  margin-bottom: 10px;
+  height: 95%;
+  width: 97%;
+}
+.fix {
+  height: 48px;
+  margin-bottom: 15px;
 }
 </style>
 
