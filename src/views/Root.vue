@@ -19,10 +19,10 @@
 <div v-if="enterSuccess" align="center">
   <v-card class="settings" v-bind:class="{ active: isMobile }">
     <form>
-      <input @keyup.enter="addProduct" type="text" v-model="productInput" placeholder="URL изображения">
-      <v-btn class="shop-btn" @click="addProduct">Добавить</v-btn>
+      <input id="add" @keyup.enter="addProduct" type="text" :value="productInput" placeholder="URL изображения">
+      <v-btn class="shop-btn" @submit="addProduct" @click="addProduct">add</v-btn>
       <br>
-      <input @keyup.enter="setAvatar" autocomplete="none" type="text" v-model="userAvatar" placeholder="Set avatar URL">
+      <input @keyup.enter="setAvatar" id="setAvatar" autocomplete="none" type="text" :value="userAvatar" placeholder="Set avatar URL">
       <v-btn @click="setAvatar">set</v-btn>
     </form>
   </v-card>
@@ -45,7 +45,7 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
 	    </v-list-item>
-    <v-img class="feed-img" v-bind:class="{ mobileImg: isMobile }" loading="lazy" :src = feed.posts></v-img>
+    <v-img v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }" loading="lazy" :src = feed.posts></v-img>
     </v-card>
   </div>
 </div>
@@ -57,37 +57,36 @@ import AppBarComponent from '@/components/AppBarComponent.vue'
 import DrawerComponent from '@/components/Drawer.vue'
 import SignInDialog from '@/components/SignInDialog.vue'
 const SignUpDialog = () => import('@/components/SignUpDialog.vue')
-  export default {
-    components: {
-      AppBarComponent,
-      DrawerComponent,
-      SignInDialog,
-      SignUpDialog
-    },
-  	props: {
-      source: String
-    },
-    data () {
-      return {
-        enterError: false,
-        productInput: '',
-        userAvatar: '',
-        upDialog: false,
-        loading: true,
-        postId: 0,
-        isMobile: Boolean,
-        all: [{
-          id: 0,
-          posts: '',
-          uid: '',
-          email: '',
-          avatarUrl: '',
-        }]
-      }
+
+export default {
+  components: {
+    AppBarComponent,
+    DrawerComponent,
+    SignInDialog,
+    SignUpDialog
+  },
+  data () {
+    return {
+      enterError: false,
+      productInput: '',
+      userAvatar: '',
+      upDialog: false,
+      loading: true,
+      postId: 0,
+      isMobile: Boolean,
+      all: [{
+        id: 0,
+        posts: '',
+        uid: '',
+        email: '',
+        avatarUrl: '',
+      }]
+    }
   },
 
 methods: {
     async addProduct(index) {
+      this.productInput = document.getElementById("add").value;
       if(this.productInput !== '') {
         this.postId = this.all[0].id + 1
         this.all.unshift({id: this.postId, posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.user.photoURL})
@@ -107,8 +106,9 @@ methods: {
     },
 
     setAvatar() {
+      this.userAvatar = document.getElementById("setAvatar").value;
       let User = firebase.auth().currentUser
-    	if(this.enterSuccess) {
+    	if(this.enterSuccess && this.userAvatar !== '') {
         User.updateProfile({
           photoURL: this.userAvatar
         })
@@ -120,7 +120,7 @@ methods: {
     },
     
     resizeUpdate() {
-      if(this.$vuetify.breakpoint.name == 'xs' || this.$vuetify.breakpoint.name == 'sm'){
+      if(this.$vuetify.breakpoint.name === 'xs' || this.$vuetify.breakpoint.name === 'sm'){
         this.isMobile = true
       }else{
         this.isMobile = false
@@ -130,7 +130,7 @@ methods: {
     getData() {
       const takePosts = firebase.database().ref('/posted/data')
 			  takePosts.once('value', (snapshot)=> {
-			    if(snapshot.val()!==null || snapshot.val() != this.all) {
+			    if(snapshot.val()!==null || snapshot.val() !== this.all) {
             this.all = snapshot.val()
           }
         })
@@ -209,17 +209,17 @@ div.container {
   height: 90%;
   width: 97%;
 }
-.mobileImg {
-  height: 80%;
-  max-width: 100%;
-}
 .feed-container {
   margin-bottom: 10px;
 }
-.feed-img {
+.desPic {
   margin-bottom: 10px;
   height: 95%;
   width: 97%;
+}
+.mobilePic {
+  height: 80%;
+  width: 100%;
 }
 .fix {
   height: 48px;

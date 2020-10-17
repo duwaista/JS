@@ -15,7 +15,7 @@
           </template>
           <span>Изменить тему</span>
         </v-tooltip>
-      </v-list-item> 
+      </v-list-item>
       <v-list-item dense link>
         <v-list-item-action>
           <v-icon>mdi-home</v-icon>

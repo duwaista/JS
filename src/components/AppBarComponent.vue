@@ -2,7 +2,7 @@
 <v-app-bar
   app
   dense
-  elevation="3"
+  elevation="2"
   >
   <v-app-bar-nav-icon @click.stop="$store.state.drawer = !$store.state.drawer"/>
   <template>

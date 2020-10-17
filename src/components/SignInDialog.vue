@@ -9,7 +9,7 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field @keyup.enter="enterUser" clearable v-model="user.email" label="Email" type="email" required></v-text-field>
+                <v-text-field @keyup.enter="enterUser" id="userEmail" clearable v-model="user.email" label="Email" type="email" required></v-text-field>
               </v-col>
               <v-col cols="12">
                 <v-text-field @keyup.enter="enterUser" clearable v-model="user.password" label="Password" type="password" required></v-text-field>
