@@ -49,6 +49,7 @@ export default {
   },
   methods: {
     enterUser() {
+      this.$store.dispatch('setLoading', true)
       if(this.user.email != null && this.user.password != null){
         firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password)
         .then( (response)=> {
@@ -57,23 +58,22 @@ export default {
             uid: response.user.uid,
             photoURL: response.user.photoURL
           }
-          this.$store.commit("setUser", u)
-          
-          this.$store.commit("openInDialog", false)
-          this.loading = false
-          this.$store.state.enterSuccess = true
+          this.$store.dispatch('setLoading', false)
+          this.$store.dispatch("setUser", u)
+          this.$store.dispatch("openInDialog", false)
+          this.$store.dispatch('enterSuccess', true)
           this.enterError = false
         })
         .catch( (Error)=> {
           console.log(Error)
           this.enterError=true
-          this.$store.state.enterSuccess = false
-          this.loading = false
+          this.$store.dispatch('enterSuccess', false)
+          this.$store.dispatch('setLoading', false)
         })
       }else{
         this.enterError=true
-        this.$store.state.enterSuccess=false
-        this.loading = false
+        this.$store.dispatch('enterSuccess', false)
+        this.$store.dispatch('setLoading', false)
       }
     },
   }

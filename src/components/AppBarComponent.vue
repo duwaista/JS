@@ -34,8 +34,8 @@ export default {
     name: "AppBarComponent",
     methods: {
         logoutUser() {
-            this.$store.commit("enterSuccess", false)
-            this.$store.commit("setUser", {
+            this.$store.dispatch("enterSuccess", false)
+            this.$store.dispatch("setUser", {
                 email: '',
                 uid: '',
                 photoURL: ''

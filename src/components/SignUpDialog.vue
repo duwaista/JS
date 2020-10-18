@@ -49,7 +49,7 @@ export default {
     },
     methods: {
         registerUser() {
-            if(this.newUser.password !== this.newUser.confirmPassword || this.newUser.password.length<6 || this.newUser.password == '' || this.newUser.confirmPassword == '' || this.newUser.email == ''){
+            if(this.newUser.password !== this.newUser.confirmPassword || this.newUser.password.length<6 || this.newUser.password === '' || this.newUser.confirmPassword === '' || this.newUser.email === ''){
                 this.error = true
                 this.success = false
             }else{

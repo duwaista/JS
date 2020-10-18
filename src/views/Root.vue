@@ -28,11 +28,11 @@
   </v-card>
 </div>
 
-<div v-if="loading" align="center">
+<div v-if="$store.state.loading" align="center">
   <v-progress-circular color="primary" :indeterminate="true"></v-progress-circular>
 </div>
 
-<div v-show="!loading" align="center">
+<div v-show="!$store.state.loading" align="center">
   <div class="feed-container" v-for="(feed, index) in all" :key="feed.id">
     <v-card class="feed" v-bind:class="{ mobile: isMobile }" outlined>
       <v-list-item>
@@ -71,7 +71,6 @@ export default {
       productInput: '',
       userAvatar: '',
       upDialog: false,
-      loading: true,
       postId: 0,
       isMobile: Boolean,
       all: [{
@@ -135,7 +134,7 @@ methods: {
           }
         })
       .then( ()=> {
-        this.loading = false
+        this.$store.dispatch('setLoading', false)
       })
     }
   },

@@ -6,15 +6,16 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
         dark: false,
+        loading: true,
         drawer: false,
         inDialog: false,
         upDialog: false,
+        enterSuccess: false,
         user: {
             email: '',
             uid: '',
             photoURL: '',
         },
-        enterSuccess: false
     },
 
     mutations: {
@@ -35,6 +36,30 @@ export default new Vuex.Store({
         },
         openUpDialog(state, p) {
             state.upDialog = p
+        },
+        setLoading(state, l) {
+            state.loading = l
         }
+    },
+
+    actions: {
+        setLoading(loading, l) {
+            loading.commit('setLoading', l);
+        },
+        setDark(dark,d) {
+            dark.commit('setDark', d)
+        },
+        setUser(user, u) {
+            user.commit('setUser', u)
+        },
+        enterSuccess(enterSuccess , s) {
+            enterSuccess.commit('enterSuccess', s)
+        },
+        openInDialog(inDialog, i) {
+            inDialog.commit('openInDialog', i)
+        },
+        openUpDialog(upDialog, p) {
+            upDialog.commit('openUpDialog', p)
+        },
     }
 })
