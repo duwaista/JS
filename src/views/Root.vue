@@ -32,6 +32,7 @@
   <v-progress-circular color="primary" :indeterminate="true"></v-progress-circular>
 </div>
 
+<!-- Feed -->
 <div v-show="!$store.state.loading" align="center">
   <div class="feed-container" v-for="(feed, index) in all" :key="feed.id">
     <v-card class="feed" v-bind:class="{ mobile: isMobile }" outlined>
@@ -41,11 +42,11 @@
 	      </v-list-item-avatar>
         <v-card-title>{{ feed.email }}</v-card-title>
         <v-spacer></v-spacer>
-        <v-btn v-if="enterSuccess && feed.uid === $store.state.user.uid" icon @click="removeProduct(index)">
+        <v-btn v-if="enterSuccess && feed.uid === $store.state.user.uid" icon @click="postId = feed.id ,removeProduct(index)">
           <v-icon>mdi-close</v-icon>
         </v-btn>
 	    </v-list-item>
-    <v-img v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }" loading="lazy" :src = feed.posts></v-img>
+      <img v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }" loading="lazy" :src = feed.posts @error="onError">
     </v-card>
   </div>
 </div>
@@ -73,35 +74,44 @@ export default {
       upDialog: false,
       postId: 0,
       isMobile: Boolean,
+      imgLoaded: true,
       all: [{
         id: 0,
         posts: '',
         uid: '',
         email: '',
         avatarUrl: '',
+        createdAt: ''
       }]
     }
   },
 
 methods: {
-    async addProduct(index) {
+    addProduct() {
       this.productInput = document.getElementById("add").value;
       if(this.productInput !== '') {
-        this.postId = this.all[0].id + 1
-        this.all.unshift({id: this.postId, posts: this.productInput, uid: this.user.uid, email: this.user.email, avatarUrl: this.user.photoURL})
+        this.postId = Math.random().toString(36).substring(2)
+        let post = {
+          id: this.postId,
+          avatarUrl: this.user.photoURL,
+          email: this.user.email,
+          uid: this.user.uid,
+          posts: this.productInput,
+          createdAt: new Date().toString()
+        }
+        firebase.database().ref('posted/' + this.postId).set(post)
+        .then(() => {
+          this.all.unshift(post)
+          this.productInput = ''
+        })
       }
-      await firebase.database().ref('posted/').set({
-        data: this.all
-      })
-      this.productInput=''
     },
 
     removeProduct(index) {
       delete this.all[index]
       this.all = this.all.filter(element=>element !== undefined)
-      firebase.database().ref('posted/').set({
-        data: this.all
-      })
+      console.log(this.postId)
+      firebase.database().ref('posted/' + this.postId).remove()
     },
 
     setAvatar() {
@@ -127,15 +137,29 @@ methods: {
     },
 
     getData() {
-      const takePosts = firebase.database().ref('/posted/data')
+      const takePosts = firebase.database().ref('/posted/')
 			  takePosts.once('value', (snapshot)=> {
 			    if(snapshot.val()!==null || snapshot.val() !== this.all) {
             this.all = snapshot.val()
+            let result = [];
+            for (const key in this.all) {
+              result.unshift(this.all[key]);
+            }
+            this.all = result;
+            this.all.sort(function(a,b){
+              // Turn your strings into dates, and then subtract them
+              // to get a value that is either negative, positive, or zero.
+              return new Date(b.createdAt) - new Date(a.createdAt);
+            });
           }
         })
       .then( ()=> {
         this.$store.dispatch('setLoading', false)
+        console.log(this.all)
       })
+    },
+    onError() {
+      this.imgLoaded = false
     }
   },
 
