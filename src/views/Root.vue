@@ -37,16 +37,18 @@
   <div class="feed-container" v-for="(feed, index) in all" :key="feed.id">
     <v-card class="feed" v-bind:class="{ mobile: isMobile }" outlined>
       <v-list-item>
-	      <v-list-item-avatar v-if="feed.avatarUrl">
-			    <v-img aspect-ratio="1.0" :src= "feed.avatarUrl"></v-img>
-	      </v-list-item-avatar>
-        <v-card-title>{{ feed.email }}</v-card-title>
+        <v-list-item-avatar v-if="feed.avatarUrl">
+          <v-img aspect-ratio="1.0" :src= "feed.avatarUrl"></v-img>
+        </v-list-item-avatar>
+          <v-card-title>{{ feed.email }}
+<!--            <v-list-item-subtitle align="left">{{ feed.createdAt }}</v-list-item-subtitle>-->
+          </v-card-title>
         <v-spacer></v-spacer>
-        <v-btn v-if="enterSuccess && feed.uid === $store.state.user.uid" icon @click="postId = feed.id ,removeProduct(index)">
+        <v-btn v-if="enterSuccess && feed.uid === $store.state.user.uid" icon @click="postId = feed.id; removeProduct(index)">
           <v-icon>mdi-close</v-icon>
         </v-btn>
 	    </v-list-item>
-      <img v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }" loading="lazy" :src = feed.posts @error="onError">
+      <v-img v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }" loading="lazy" :src = feed.posts></v-img>
     </v-card>
   </div>
 </div>
@@ -74,14 +76,13 @@ export default {
       upDialog: false,
       postId: 0,
       isMobile: Boolean,
-      imgLoaded: true,
       all: [{
         id: 0,
         posts: '',
         uid: '',
         email: '',
         avatarUrl: '',
-        createdAt: ''
+        createdAt: '',
       }]
     }
   },
@@ -108,10 +109,11 @@ methods: {
     },
 
     removeProduct(index) {
-      delete this.all[index]
-      this.all = this.all.filter(element=>element !== undefined)
-      console.log(this.postId)
       firebase.database().ref('posted/' + this.postId).remove()
+      .then(() => {
+        delete this.all[index]
+        this.all = this.all.filter(element=>element !== undefined)
+      })
     },
 
     setAvatar() {
@@ -147,19 +149,13 @@ methods: {
             }
             this.all = result;
             this.all.sort(function(a,b){
-              // Turn your strings into dates, and then subtract them
-              // to get a value that is either negative, positive, or zero.
               return new Date(b.createdAt) - new Date(a.createdAt);
             });
           }
         })
       .then( ()=> {
         this.$store.dispatch('setLoading', false)
-        console.log(this.all)
       })
-    },
-    onError() {
-      this.imgLoaded = false
     }
   },
 
