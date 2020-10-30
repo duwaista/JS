@@ -1,9 +1,10 @@
 <template>
 <div>
-
 <AppBarComponent/>
 
 <DrawerComponent/>
+
+  <FullScreenDialog :picture= Picture></FullScreenDialog>
 
 <v-card class="fix" flat>
   <v-card-title></v-card-title>
@@ -41,14 +42,20 @@
           <v-img aspect-ratio="1.0" :src= "feed.avatarUrl"></v-img>
         </v-list-item-avatar>
           <v-card-title>{{ feed.email }}
-<!--            <v-list-item-subtitle align="left">{{ feed.createdAt }}</v-list-item-subtitle>-->
+<!--            <v-list-item-subtitle align="left">{{ feed.createdAt.getFullYear() }}</v-list-item-subtitle>-->
           </v-card-title>
         <v-spacer></v-spacer>
         <v-btn v-if="enterSuccess && feed.uid === $store.state.user.uid" icon @click="postId = feed.id; removeProduct(index)">
           <v-icon>mdi-close</v-icon>
         </v-btn>
 	    </v-list-item>
-      <v-img v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }" loading="lazy" :src = feed.posts></v-img>
+      <v-img
+          @click="$store.dispatch('openFullScreenDialog', true); Picture = feed.posts"
+          v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }"
+          loading="lazy"
+          :src = feed.posts
+      >
+      </v-img>
     </v-card>
   </div>
 </div>
@@ -59,6 +66,7 @@
 import AppBarComponent from '@/components/AppBarComponent.vue'
 import DrawerComponent from '@/components/Drawer.vue'
 import SignInDialog from '@/components/SignInDialog.vue'
+const FullScreenDialog = () => import('@/components/FullScreenDialog')
 const SignUpDialog = () => import('@/components/SignUpDialog.vue')
 
 export default {
@@ -66,6 +74,7 @@ export default {
     AppBarComponent,
     DrawerComponent,
     SignInDialog,
+    FullScreenDialog,
     SignUpDialog
   },
   data () {
@@ -76,6 +85,7 @@ export default {
       upDialog: false,
       postId: 0,
       isMobile: Boolean,
+      Picture: '',
       all: [{
         id: 0,
         posts: '',

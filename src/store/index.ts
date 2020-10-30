@@ -10,6 +10,7 @@ export default new Vuex.Store({
         drawer: false,
         inDialog: false,
         upDialog: false,
+        fullScreenDialog: false,
         enterSuccess: false,
         user: {
             email: '',
@@ -39,6 +40,9 @@ export default new Vuex.Store({
         },
         setLoading(state, l) {
             state.loading = l
+        },
+        openFullScreenDialog(state, f) {
+            state.fullScreenDialog = f
         }
     },
 
@@ -61,5 +65,8 @@ export default new Vuex.Store({
         openUpDialog(upDialog, p) {
             upDialog.commit('openUpDialog', p)
         },
+        openFullScreenDialog(fullScreenDialog, f) {
+            fullScreenDialog.commit('openFullScreenDialog', f)
+        }
     }
 })
