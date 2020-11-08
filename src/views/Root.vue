@@ -45,11 +45,18 @@
 <!--            <v-list-item-subtitle align="left">{{ feed.createdAt.getFullYear() }}</v-list-item-subtitle>-->
           </v-card-title>
         <v-spacer></v-spacer>
-        <v-btn v-if="enterSuccess && feed.uid === $store.state.user.uid" icon @click="postId = feed.id; removeProduct(index)">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
+        <v-tooltip bottom v-if="enterSuccess && feed.uid === $store.state.user.uid">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn v-bind="attrs" v-on="on" icon @click="postId = feed.id; removeProduct(index)">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </template>
+          <span>Удалить</span>
+        </v-tooltip>
+
 	    </v-list-item>
       <v-img
+          aspect-ratio="1.2"
           @click="$store.dispatch('openFullScreenDialog', true); Picture = feed.posts"
           v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }"
           loading="lazy"
@@ -63,6 +70,7 @@
 </div>
 </template>
 <script>
+import { firebase } from '@/plugins/firebase'
 import AppBarComponent from '@/components/AppBarComponent.vue'
 import DrawerComponent from '@/components/Drawer.vue'
 import SignInDialog from '@/components/SignInDialog.vue'
