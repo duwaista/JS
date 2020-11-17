@@ -1,12 +1,15 @@
 <template>
-  <v-row justify="center" align="center">
+  <v-row justify="center" align="center" align-content="center">
     <v-dialog
     v-model="$store.state.fullScreenDialog"
-    fullscreen
-    hide-overlay
+    @input="v => v || $store.dispatch('openFullScreenDialog', false)"
+    :fullscreen="$vuetify.breakpoint.mobile"
+    width="70%"
+    height="70%"
     >
       <v-card>
-        <v-toolbar>
+        <v-toolbar v-if="$vuetify.breakpoint.mobile">
+          <v-spacer></v-spacer>
           <v-btn
               icon
               @click="$store.dispatch('openFullScreenDialog', false)"

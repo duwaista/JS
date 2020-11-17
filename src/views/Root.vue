@@ -53,11 +53,10 @@
           </template>
           <span>Удалить</span>
         </v-tooltip>
-
 	    </v-list-item>
       <v-img
           aspect-ratio="1.2"
-          @click="$store.dispatch('openFullScreenDialog', true); Picture = feed.posts"
+          @click.stop="$store.dispatch('openFullScreenDialog', true); Picture = feed.posts"
           v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }"
           loading="lazy"
           :src = feed.posts
