@@ -47,7 +47,7 @@
         <v-spacer></v-spacer>
         <v-tooltip bottom v-if="enterSuccess && feed.uid === $store.state.user.uid">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn v-bind="attrs" v-on="on" icon @click="postId = feed.id; removeProduct(index)">
+            <v-btn v-bind="attrs" v-on="on" icon @click="removeProduct(index, feed.id)">
               <v-icon>mdi-close</v-icon>
             </v-btn>
           </template>
@@ -117,16 +117,17 @@ methods: {
           posts: this.productInput,
           createdAt: new Date().toString()
         }
-        firebase.database().ref('posted/' + this.postId).set(post)
+        firebase.database().ref('posted/').push(post)
         .then(() => {
           this.all.unshift(post)
           this.productInput = ''
+          this.postId = 0
         })
       }
     },
 
-    removeProduct(index) {
-      firebase.database().ref('posted/' + this.postId).remove()
+    removeProduct(index, id) {
+      firebase.database().ref('posted/' + id).remove()
       .then(() => {
         delete this.all[index]
         this.all = this.all.filter(element=>element !== undefined)
