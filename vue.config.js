@@ -3,17 +3,17 @@ module.exports = {
     pwa: {
         workboxOptions: {
             skipWaiting: true
+        }
+    },
+    configureWebpack: {
+        performance: {
+            hints: false
         },
-        configureWebpack: {
-            performance: {
-                hints: false
-            },
-            optimization: {
-                splitChunks: {
-                    minSize: 20000,
-                    maxSize: 210000,
-                }
+        optimization: {
+            splitChunks: {
+                minSize: 20000,
+                maxSize: 210000,
             }
-        },
+        }
     }
 }
