@@ -4,7 +4,7 @@
 
 <DrawerComponent/>
 
-  <FullScreenDialog :picture= Picture></FullScreenDialog>
+  <FullScreenDialog :picture = Picture></FullScreenDialog>
 
 <v-card class="fix" flat>
   <v-card-title></v-card-title>
@@ -93,6 +93,7 @@ export default {
       postId: 0,
       isMobile: Boolean,
       Picture: '',
+
       all: [{
         id: 0,
         posts: '',
@@ -118,7 +119,7 @@ methods: {
           createdAt: new Date().toString()
         }
         firebase.database().ref('posted/').push(post)
-        .then(() => {
+        .then( () => {
           this.all.unshift(post)
           this.productInput = ''
           this.postId = 0
@@ -130,7 +131,7 @@ methods: {
       firebase.database().ref('posted/' + id).remove()
       .then(() => {
         delete this.all[index]
-        this.all = this.all.filter(element=>element !== undefined)
+        this.all = this.all.filter(element => element !== undefined)
       })
     },
 
@@ -141,7 +142,7 @@ methods: {
         User.updateProfile({
           photoURL: this.userAvatar
         })
-        .then(()=>{
+        .then( () => {
           this.user.photoURL = User.photoURL
           this.userAvatar = ''
         })
@@ -158,7 +159,7 @@ methods: {
 
     getData() {
       const takePosts = firebase.database().ref('/posted/')
-			  takePosts.once('value', (snapshot)=> {
+			  takePosts.on('value', (snapshot)=> {
 			    if(snapshot.val()!==null || snapshot.val() !== this.all) {
             this.all = snapshot.val()
             let result = [];
@@ -169,11 +170,12 @@ methods: {
             this.all.sort(function(a,b){
               return new Date(b.createdAt) - new Date(a.createdAt);
             });
+            this.$store.dispatch('setLoading', false)
           }
         })
-      .then( ()=> {
-        this.$store.dispatch('setLoading', false)
-      })
+      // .then( ()=> {
+      //   this.$store.dispatch('setLoading', false)
+      // })
     }
   },
 

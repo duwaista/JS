@@ -24,7 +24,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="upDialog = false, success = false, error = false">Close</v-btn>
+          <v-btn color="blue darken-1" text @click="upDialog = false; success = false; error = false">Close</v-btn>
           <v-btn v-if="newUser.email && newUser.password && newUser.confirmPassword" color="blue darken-1" text @click="registerUser">Register</v-btn>
           <v-btn v-else color="blue darken-1" text disabled @click="registerUser">Register</v-btn>
         </v-card-actions>

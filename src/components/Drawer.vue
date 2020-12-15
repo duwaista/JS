@@ -69,6 +69,11 @@ export default {
         this.$vuetify.theme.dark = v
       }
     }
+  },
+  methods: {
+    changeDrawer() {
+      this.drawer = true
+    }
   }
 }
 </script>

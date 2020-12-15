@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { firebase } from '@/plugins/firebase'
 
 Vue.use(Vuex)
 
@@ -12,6 +13,11 @@ export default new Vuex.Store({
         upDialog: false,
         fullScreenDialog: false,
         enterSuccess: false,
+
+        auth: {
+            email: '',
+            password: ''
+        },
         user: {
             email: '',
             uid: '',
@@ -43,6 +49,10 @@ export default new Vuex.Store({
         },
         openFullScreenDialog(state, f) {
             state.fullScreenDialog = f
+        },
+        setAuth(state, a) {
+            state.auth.email = a.email,
+            state.auth.password = a.password
         }
     },
 
@@ -67,6 +77,33 @@ export default new Vuex.Store({
         },
         openFullScreenDialog(fullScreenDialog, f) {
             fullScreenDialog.commit('openFullScreenDialog', f)
+        },
+        authAction(state, auth:{ email: string, password: string}) {
+            if(auth.email !== null && auth.password !== null) {
+                firebase.auth().signInWithEmailAndPassword(auth.email, auth.password)
+                .then( (response) => {
+                    if(response.user !== null) {
+                        let u = {
+                            email: response.user.email,
+                            uid: response.user.uid,
+                            photoURL: response.user.photoURL
+                        };
+                        this.dispatch('setLoading', false);
+                        this.dispatch("setUser", u).then(()=>{
+                            this.commit('setAuth', {email: '', password: ''})
+                        })
+                        this.dispatch("openInDialog", false);
+                        this.dispatch('enterSuccess', true)
+                    }    
+                })
+                .catch(() => {
+                    this.dispatch('enterSuccess', false);
+                    this.dispatch('setLoading', false)
+                })
+            }else{
+                this.dispatch('setLoading', false);
+                this.dispatch('enterSuccess', false)
+            }
         }
     }
 })
