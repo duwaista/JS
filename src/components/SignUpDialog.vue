@@ -56,16 +56,18 @@ export default {
             }else{
 
             firebase.auth().createUserWithEmailAndPassword(this.newUser.email, this.newUser.password)
-                .then( ()=> {
-                    this.success=true
-                    this.error=false
+                .then( () => {
+                    this.success = true
+                    this.error = false
                     this.newUser = {
                       password: '',
                       confirmPassword: '',
                       email: ''
                     }
+                    this.$store.dispatch('openUpDialog', false)
                 })
                 .catch( error =>{
+                    console.log(error)
                 })
             }
         },

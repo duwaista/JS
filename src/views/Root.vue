@@ -176,6 +176,19 @@ methods: {
       // .then( ()=> {
       //   this.$store.dispatch('setLoading', false)
       // })
+    },
+
+    getCurrentUser() {
+      firebase.auth().onAuthStateChanged((currentUser) => {
+        if(currentUser !== null) {
+          this.user.email = currentUser.email;
+          this.user.uid = currentUser.uid;
+          this.user.photoURL = currentUser.photoURL;
+          this.$store.dispatch('enterSuccess', true)
+        }else{
+          this.$store.dispatch('enterSuccess', false)
+        }
+      })
     }
   },
 
@@ -188,8 +201,9 @@ methods: {
   },
 
   mounted(){
-    this.resizeUpdate()
-    this.getData()
+    this.resizeUpdate();
+    this.getData();
+    this.getCurrentUser();
   },
 
   computed: {
@@ -226,6 +240,7 @@ methods: {
 input {
   width: 300px;
   padding: 9px;
+  border: 2px;
 }
 div.container {
   padding: 0px;
