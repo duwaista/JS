@@ -3,6 +3,7 @@
     v-model="drawer"
     app
   >
+  <template v-slot:prepend>
     <v-list>
       <v-list-item v-if="$store.state.enterSuccess" link>
         <v-list-item-action>
@@ -45,6 +46,7 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
+  </template>
   </v-navigation-drawer>
 </template>
 

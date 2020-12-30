@@ -4,7 +4,7 @@
 
 <DrawerComponent/>
 
-  <FullScreenDialog :picture = Picture></FullScreenDialog>
+<FullScreenDialog :picture = Picture></FullScreenDialog>
 
 <v-card class="fix" flat>
   <v-card-title></v-card-title>
@@ -15,6 +15,8 @@
 
 <!-- Sign-up dialog -->
 <SignUpDialog v-if="$store.state.upDialog"/>
+
+<SnackbarComponent/>
 
 <!-- Settings -->
 <div v-if="enterSuccess" align="center">
@@ -55,11 +57,11 @@
         </v-tooltip>
 	    </v-list-item>
       <v-img
-          aspect-ratio="1.2"
-          @click.stop="$store.dispatch('openFullScreenDialog', true); Picture = feed.posts"
-          v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }"
-          loading="lazy"
-          :src = feed.posts
+        aspect-ratio="1.2"
+        @click.stop="$store.dispatch('openFullScreenDialog', true); Picture = feed.posts"
+        v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }"
+        loading="lazy"
+        :src = feed.posts
       >
       </v-img>
     </v-card>
@@ -73,8 +75,10 @@ import { firebase } from '@/plugins/firebase'
 import AppBarComponent from '@/components/AppBarComponent.vue'
 import DrawerComponent from '@/components/Drawer.vue'
 import SignInDialog from '@/components/SignInDialog.vue'
+const SnackbarComponent = () => import('@/components/SnackbarComponent.vue')
 const FullScreenDialog = () => import('@/components/FullScreenDialog')
 const SignUpDialog = () => import('@/components/SignUpDialog.vue')
+
 
 export default {
   components: {
@@ -82,7 +86,8 @@ export default {
     DrawerComponent,
     SignInDialog,
     FullScreenDialog,
-    SignUpDialog
+    SignUpDialog,
+    SnackbarComponent
   },
   data () {
     return {
@@ -93,6 +98,7 @@ export default {
       postId: 0,
       isMobile: Boolean,
       Picture: '',
+      openSnackbar: false,
 
       all: [{
         id: 0,
@@ -159,7 +165,7 @@ methods: {
 
     getData() {
       const takePosts = firebase.database().ref('/posted/')
-			  takePosts.on('value', (snapshot)=> {
+			  takePosts.once('value', (snapshot)=> {
 			    if(snapshot.val()!==null || snapshot.val() !== this.all) {
             this.all = snapshot.val()
             let result = [];
@@ -170,12 +176,12 @@ methods: {
             this.all.sort(function(a,b){
               return new Date(b.createdAt) - new Date(a.createdAt);
             });
-            this.$store.dispatch('setLoading', false)
+            // this.$store.dispatch('setLoading', false)
           }
         })
-      // .then( ()=> {
-      //   this.$store.dispatch('setLoading', false)
-      // })
+      .then( ()=> {
+        this.$store.dispatch('setLoading', false)
+      })
     },
 
     getCurrentUser() {
@@ -184,7 +190,8 @@ methods: {
           this.user.email = currentUser.email;
           this.user.uid = currentUser.uid;
           this.user.photoURL = currentUser.photoURL;
-          this.$store.dispatch('enterSuccess', true)
+          this.$store.dispatch('enterSuccess', true);
+          this.$store.dispatch('setOpenSnackbar', true)
         }else{
           this.$store.dispatch('enterSuccess', false)
         }
@@ -203,7 +210,7 @@ methods: {
   mounted(){
     this.resizeUpdate();
     this.getData();
-    this.getCurrentUser();
+    this.getCurrentUser()
   },
 
   computed: {
@@ -270,6 +277,7 @@ div.container {
   margin-bottom: 10px;
   height: 95%;
   width: 97%;
+  cursor: pointer;
 }
 .mobilePic {
   height: 80%;

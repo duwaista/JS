@@ -13,6 +13,7 @@ export default new Vuex.Store({
         upDialog: false,
         fullScreenDialog: false,
         enterSuccess: false,
+        openSnackbar: false,
 
         auth: {
             email: '',
@@ -53,6 +54,9 @@ export default new Vuex.Store({
         setAuth(state, a) {
             state.auth.email = a.email,
             state.auth.password = a.password
+        },
+        setOpenSnackbar(state, snackbar) {
+            state.openSnackbar = snackbar
         }
     },
 
@@ -77,6 +81,9 @@ export default new Vuex.Store({
         },
         openFullScreenDialog(fullScreenDialog, f) {
             fullScreenDialog.commit('openFullScreenDialog', f)
+        },
+        setOpenSnackbar(openSnackbar, snackbar) {
+            openSnackbar.commit('setOpenSnackbar', snackbar)
         },
         authAction(state, auth:{ email: string, password: string}) {
             if(auth.email !== null && auth.password !== null) {
