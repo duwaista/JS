@@ -3,6 +3,7 @@
     <v-snackbar
         v-model="$store.state.openSnackbar"
         :timeout="2500"
+        absolute
     >
     Вы вошли как {{ $store.state.user.email }}
 

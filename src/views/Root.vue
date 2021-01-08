@@ -2,7 +2,10 @@
 <div>
 <AppBarComponent/>
 
-<DrawerComponent/>
+  <SnackbarComponent/>
+
+
+  <DrawerComponent/>
 
 <FullScreenDialog :picture = Picture></FullScreenDialog>
 
@@ -15,8 +18,6 @@
 
 <!-- Sign-up dialog -->
 <SignUpDialog v-if="$store.state.upDialog"/>
-
-<SnackbarComponent/>
 
 <!-- Settings -->
 <div v-if="enterSuccess" align="center">
@@ -75,7 +76,8 @@ import { firebase } from '@/plugins/firebase'
 import AppBarComponent from '@/components/AppBarComponent.vue'
 import DrawerComponent from '@/components/Drawer.vue'
 import SignInDialog from '@/components/SignInDialog.vue'
-const SnackbarComponent = () => import('@/components/SnackbarComponent.vue')
+// const SnackbarComponent = () => import('@/components/SnackbarComponent.vue')
+import SnackbarComponent from "@/components/SnackbarComponent";
 const FullScreenDialog = () => import('@/components/FullScreenDialog')
 const SignUpDialog = () => import('@/components/SignUpDialog.vue')
 

@@ -12,7 +12,7 @@
         <v-list-item-content><v-list-item-title> {{$store.state.user.email}} </v-list-item-title></v-list-item-content>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn v-bind="attrs" v-on="on" icon @click.stop="dark = !dark"><v-icon>mdi-white-balance-sunny</v-icon></v-btn>
+            <v-btn v-bind="attrs" v-on="on" icon @click.stop="changeTheme"><v-icon>mdi-white-balance-sunny</v-icon></v-btn>
           </template>
           <span>Изменить тему</span>
         </v-tooltip>
@@ -24,7 +24,7 @@
         <v-list-item-content><v-list-item-title> Home </v-list-item-title></v-list-item-content>
         <v-tooltip v-if="!$store.state.enterSuccess" bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn v-bind="attrs" v-on="on" icon @click.stop="dark = !dark"><v-icon>mdi-white-balance-sunny</v-icon></v-btn>
+            <v-btn v-bind="attrs" v-on="on" icon @click.stop="changeTheme"><v-icon>mdi-white-balance-sunny</v-icon></v-btn>
           </template>
           <span>Изменить тему</span>
         </v-tooltip>
@@ -53,6 +53,11 @@
 <script>
 export default {
   name: 'DrawerComponent',
+  data() {
+    return {
+      dark: false
+    }
+  },
   computed: {
     drawer: {
       get() {
@@ -61,20 +66,31 @@ export default {
       set(w) {
         this.$store.state.drawer = w
       }
-    },
-    dark: {
-      get() {
-        return this.$store.state.dark
-      },
-      set(v) {
-        this.$store.commit('setDark', v)
-        this.$vuetify.theme.dark = v
-      }
     }
   },
+
   methods: {
-    changeDrawer() {
-      this.drawer = true
+    changeTheme() {
+      this.dark = !this.dark
+      this.$vuetify.theme.dark = this.dark
+      this.$store.dispatch('setDark', this.dark)
+    }
+  },
+
+  mounted() {
+    if(localStorage.dark === 'true') {
+      this.$store.dispatch('setDark', true);
+      this.$vuetify.theme.dark = true;
+      this.dark = true
+    }else{
+      this.$store.dispatch('setDark', false);
+      this.$vuetify.theme.dark = false;
+      this.dark = false
+    }
+  },
+  watch: {
+    dark(newDark) {
+      localStorage.dark = newDark;
     }
   }
 }
