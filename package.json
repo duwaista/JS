@@ -26,7 +26,6 @@
     "typescript": "~3.9.3",
     "vue-template-compiler": "^2.6.12",
     "webpack": "^4.43.0",
-    "webpack-bundle-analyzer": "^3.9.0",
     "webpack-dev-server": "^3.11.1"
   }
 }

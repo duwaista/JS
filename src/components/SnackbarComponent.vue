@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center">
+  <div class="snackbar-wrapper">
     <v-snackbar
         v-model="$store.state.openSnackbar"
         :timeout="2500"
@@ -20,9 +20,19 @@
     </v-snackbar>
   </div>
 </template>
-
 <script>
 export default {
     name: "SnackbarComponent"
 }
 </script>
+<style>
+.snackbar-wrapper {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+</style>

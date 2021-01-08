@@ -7,8 +7,8 @@
     width="70%"
     height="70%"
     >
-      <v-card>
-        <v-toolbar v-if="$vuetify.breakpoint.mobile">
+      <v-card v-if="$vuetify.breakpoint.mobile">
+        <v-toolbar flat>
           <v-spacer></v-spacer>
           <v-btn
               icon
@@ -17,9 +17,13 @@
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
-        <v-card>
+        <v-card flat class="pic-container">
           <v-img :src="picture"></v-img>
         </v-card>
+      </v-card>
+
+      <v-card flat v-else>
+        <v-img :src="picture"></v-img>
       </v-card>
     </v-dialog>
   </v-row>
@@ -36,3 +40,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.pic-container {
+  margin-top: 30%;
+}
+</style>

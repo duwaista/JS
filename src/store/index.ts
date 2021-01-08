@@ -100,7 +100,8 @@ export default new Vuex.Store({
                             this.commit('setAuth', {email: '', password: ''})
                         })
                         this.dispatch("openInDialog", false);
-                        this.dispatch('enterSuccess', true)
+                        this.dispatch('enterSuccess', true);
+                        this.dispatch('setOpenSnackbar', true)
                     }    
                 })
                 .catch(() => {
