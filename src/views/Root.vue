@@ -287,7 +287,7 @@ div.container {
 }
 .fix {
   height: 48px;
-  margin-bottom: 15px;
+  margin-bottom: 59px;
 }
 </style>
 
