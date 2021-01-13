@@ -17,9 +17,11 @@
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
-        <v-card flat class="pic-container">
-          <v-img :src="picture"></v-img>
-        </v-card>
+        <div class="pic-container">
+          <v-card flat >
+            <v-img :src="picture"></v-img>
+          </v-card>
+        </div>
       </v-card>
 
       <v-card flat v-else>
@@ -40,8 +42,8 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style>
 .pic-container {
-  margin-top: 30%;
+
 }
 </style>

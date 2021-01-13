@@ -45,6 +45,14 @@
           <v-list-item-title><a href="https://github.com/duwaista/JS.git">Github</a></v-list-item-title>
         </v-list-item-content>
       </v-list-item>
+      <v-list-item to="/axios" dense link>
+        <v-list-item-action>
+          <v-icon>mdi-settings</v-icon>
+        </v-list-item-action>
+        <v-list-item-content>
+          <v-list-item-title>Change server</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
     </v-list>
   </template>
   </v-navigation-drawer>

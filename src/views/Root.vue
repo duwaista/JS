@@ -1,13 +1,10 @@
 <template>
 <div>
-<AppBarComponent/>
-
+<!-- Used components: -->
+  <AppBarComponent/>
   <SnackbarComponent/>
-
-
   <DrawerComponent/>
-
-<FullScreenDialog :picture = Picture></FullScreenDialog>
+  <FullScreenDialog :picture = Picture></FullScreenDialog>
 
 <v-card class="fix" flat>
   <v-card-title></v-card-title>
@@ -37,7 +34,7 @@
 </div>
 
 <!-- Feed -->
-<div v-show="!$store.state.loading" align="center">
+<div v-if="!alternativeServer" v-show="!$store.state.loading" align="center">
   <div class="feed-container" v-for="(feed, index) in all" :key="feed.id">
     <v-card class="feed" v-bind:class="{ mobile: isMobile }" outlined>
       <v-list-item>
@@ -51,7 +48,7 @@
         <v-tooltip bottom v-if="enterSuccess && feed.uid === $store.state.user.uid">
           <template v-slot:activator="{ on, attrs }">
             <v-btn v-bind="attrs" v-on="on" icon @click="removeProduct(index, feed.id)">
-              <v-icon>mdi-close</v-icon>
+              <v-icon>mdi-delete</v-icon>
             </v-btn>
           </template>
           <span>Удалить</span>
@@ -76,11 +73,10 @@ import { firebase } from '@/plugins/firebase'
 import AppBarComponent from '@/components/AppBarComponent.vue'
 import DrawerComponent from '@/components/Drawer.vue'
 import SignInDialog from '@/components/SignInDialog.vue'
-// const SnackbarComponent = () => import('@/components/SnackbarComponent.vue')
 import SnackbarComponent from "@/components/SnackbarComponent";
+import '@/assets/styles/main.css';
 const FullScreenDialog = () => import('@/components/FullScreenDialog')
 const SignUpDialog = () => import('@/components/SignUpDialog.vue')
-
 
 export default {
   components: {
@@ -101,6 +97,7 @@ export default {
       isMobile: Boolean,
       Picture: '',
       openSnackbar: false,
+      alternativeServer: false,
 
       all: [{
         id: 0,
@@ -244,51 +241,4 @@ methods: {
   }
 }
 </script>
-
-<style>
-input {
-  width: 300px;
-  padding: 9px;
-  border: 2px;
-}
-div.container {
-  padding: 0px;
-  max-width: 100%;
-}
-.settings {
-  width: 55%;
-  margin-bottom: 10px;
-}
-.active {
-  height: 90%;
-  width: 97%;
-  margin-bottom: 10px;
-}
-.feed {
-  height: 100%;
-  width: 55%;
-}
-.mobile {
-  height: 90%;
-  width: 97%;
-}
-.feed-container {
-  margin-bottom: 10px;
-}
-.desPic {
-  margin-bottom: 10px;
-  height: 95%;
-  width: 97%;
-  cursor: pointer;
-}
-.mobilePic {
-  height: 80%;
-  width: 100%;
-}
-.fix {
-  height: 48px;
-  margin-bottom: 59px;
-}
-</style>
-
 

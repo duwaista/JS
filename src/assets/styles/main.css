@@ -1,0 +1,43 @@
+input {
+    width: 300px;
+    padding: 9px;
+    border: 2px;
+}
+div.container {
+    padding: 0px;
+    max-width: 100%;
+}
+.settings {
+    width: 55%;
+    margin-bottom: 10px;
+}
+.active {
+    height: 90%;
+    width: 97%;
+    margin-bottom: 10px;
+}
+.feed {
+    height: 100%;
+    width: 55%;
+}
+.mobile {
+    height: 90%;
+    width: 97%;
+}
+.feed-container {
+    margin-bottom: 10px;
+}
+.desPic {
+    margin-bottom: 10px;
+    height: 95%;
+    width: 97%;
+    cursor: pointer;
+}
+.mobilePic {
+    height: 80%;
+    width: 100%;
+}
+.fix {
+    height: 48px;
+    margin-bottom: 59px;
+}
