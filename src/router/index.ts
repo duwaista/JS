@@ -9,11 +9,6 @@ export default new Router({
       path: '/',
       name: 'Root',
       component: () => import(/* webpackChunkName: "root"*/'../views/Root.vue')
-    },
-    {
-      path: '/axios',
-      name: 'Axios',
-      component: () => import (/* webpackChunkName: "axios" */ '../components/BetaAxios.vue')
     }
   ]
 })

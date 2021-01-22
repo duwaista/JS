@@ -9,12 +9,13 @@ div.container {
 }
 .settings {
     width: 55%;
+    margin-top: 45px;
     margin-bottom: 10px;
 }
 .active {
     height: 90%;
     width: 97%;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 .feed {
     height: 100%;
@@ -38,6 +39,18 @@ div.container {
     width: 100%;
 }
 .fix {
-    height: 48px;
-    margin-bottom: 59px;
+    margin-bottom: 80px;
+}
+.menu-button {
+    padding: 0px 0px;
+    margin: 0px;
+}
+.dropdown-menu {
+    padding: 0px 8px;
+}
+.toolbar-container {
+    margin-right: 0px;
+}
+.v-application--is-ltr .v-list-item__avatar:first-child {
+   margin-right: 0px;
 }

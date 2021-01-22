@@ -1,103 +1,55 @@
 <template>
-<div>
-<!-- Used components: -->
-  <AppBarComponent/>
-  <SnackbarComponent/>
-  <DrawerComponent/>
-  <FullScreenDialog :picture = Picture></FullScreenDialog>
+  <div v-touch="{
+    right: () => swipe('right')
+  }">
+    }
+    <!-- Used components: -->
+    <AppBarComponent/>
+    <SnackbarComponent/>
+    <DrawerComponent/>
+    <SignInDialog/>
+    <SignUpDialog v-if="$store.state.upDialog"/>
 
-<v-card class="fix" flat>
-  <v-card-title></v-card-title>
-</v-card>
 
-<!-- Sign-in dialog -->
-<SignInDialog/>
+    <div v-if="$store.state.loading" align="center">
+      <v-progress-circular color="primary" :indeterminate="true"></v-progress-circular>
+    </div>
 
-<!-- Sign-up dialog -->
-<SignUpDialog v-if="$store.state.upDialog"/>
+    <!-- Feed -->
+    <FeedComponent v-show="!$store.state.loading"></FeedComponent>
 
-<!-- Settings -->
-<div v-if="enterSuccess" align="center">
-  <v-card class="settings" v-bind:class="{ active: isMobile }">
-    <form>
-      <input id="add" @keyup.enter="addProduct" type="text" :value="productInput" placeholder="URL изображения">
-      <v-btn class="shop-btn" @submit="addProduct" @click="addProduct">add</v-btn>
-      <br>
-      <input @keyup.enter="setAvatar" id="setAvatar" autocomplete="none" type="text" :value="userAvatar" placeholder="Set avatar URL">
-      <v-btn @click="setAvatar">set</v-btn>
-    </form>
-  </v-card>
-</div>
-
-<div v-if="$store.state.loading" align="center">
-  <v-progress-circular color="primary" :indeterminate="true"></v-progress-circular>
-</div>
-
-<!-- Feed -->
-<div v-if="!alternativeServer" v-show="!$store.state.loading" align="center">
-  <div class="feed-container" v-for="(feed, index) in all" :key="feed.id">
-    <v-card class="feed" v-bind:class="{ mobile: isMobile }" outlined>
-      <v-list-item>
-        <v-list-item-avatar v-if="feed.avatarUrl">
-          <v-img aspect-ratio="1.0" :src= "feed.avatarUrl"></v-img>
-        </v-list-item-avatar>
-          <v-card-title>{{ feed.email }}
-<!--            <v-list-item-subtitle align="left">{{ feed.createdAt.getFullYear() }}</v-list-item-subtitle>-->
-          </v-card-title>
-        <v-spacer></v-spacer>
-        <v-tooltip bottom v-if="enterSuccess && feed.uid === $store.state.user.uid">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn v-bind="attrs" v-on="on" icon @click="removeProduct(index, feed.id)">
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
-          </template>
-          <span>Удалить</span>
-        </v-tooltip>
-	    </v-list-item>
-      <v-img
-        aspect-ratio="1.2"
-        @click.stop="$store.dispatch('openFullScreenDialog', true); Picture = feed.posts"
-        v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }"
-        loading="lazy"
-        :src = feed.posts
-      >
-      </v-img>
-    </v-card>
   </div>
-</div>
-
-</div>
 </template>
+
 <script>
-import { firebase } from '@/plugins/firebase'
+import {firebase} from '@/plugins/firebase'
 import AppBarComponent from '@/components/AppBarComponent.vue'
 import DrawerComponent from '@/components/Drawer.vue'
-import SignInDialog from '@/components/SignInDialog.vue'
 import SnackbarComponent from "@/components/SnackbarComponent";
 import '@/assets/styles/main.css';
-const FullScreenDialog = () => import('@/components/FullScreenDialog')
-const SignUpDialog = () => import('@/components/SignUpDialog.vue')
+import FeedComponent from "@/components/FeedComponent";
+
+const SignInDialog = () => import('@/components/SignInDialog');
+const SignUpDialog = () => import('@/components/SignUpDialog.vue');
 
 export default {
   components: {
+    FeedComponent,
     AppBarComponent,
     DrawerComponent,
     SignInDialog,
-    FullScreenDialog,
     SignUpDialog,
     SnackbarComponent
   },
-  data () {
+  data() {
     return {
       enterError: false,
       productInput: '',
       userAvatar: '',
       upDialog: false,
       postId: 0,
-      isMobile: Boolean,
       Picture: '',
       openSnackbar: false,
-      alternativeServer: false,
 
       all: [{
         id: 0,
@@ -110,91 +62,49 @@ export default {
     }
   },
 
-methods: {
-    addProduct() {
-      this.productInput = document.getElementById("add").value;
-      if(this.productInput !== '') {
-        this.postId = Math.random().toString(36).substring(2)
-        let post = {
-          id: this.postId,
-          avatarUrl: this.user.photoURL,
-          email: this.user.email,
-          uid: this.user.uid,
-          posts: this.productInput,
-          createdAt: new Date().toString()
-        }
-        firebase.database().ref('posted/').push(post)
-        .then( () => {
-          this.all.unshift(post)
-          this.productInput = ''
-          this.postId = 0
-        })
-      }
-    },
-
-    removeProduct(index, id) {
-      firebase.database().ref('posted/' + id).remove()
-      .then(() => {
-        delete this.all[index]
-        this.all = this.all.filter(element => element !== undefined)
-      })
-    },
-
+  methods: {
     setAvatar() {
       this.userAvatar = document.getElementById("setAvatar").value;
       let User = firebase.auth().currentUser
-    	if(this.enterSuccess && this.userAvatar !== '') {
+      if (this.enterSuccess && this.userAvatar !== '') {
         User.updateProfile({
           photoURL: this.userAvatar
         })
-        .then( () => {
-          this.user.photoURL = User.photoURL
-          this.userAvatar = ''
-        })
-    	}
-    },
-    
-    resizeUpdate() {
-      if(this.$vuetify.breakpoint.name === 'xs' || this.$vuetify.breakpoint.name === 'sm'){
-        this.isMobile = true
-      }else{
-        this.isMobile = false
+            .then(() => {
+              this.user.photoURL = User.photoURL
+              this.userAvatar = ''
+            })
       }
     },
 
-    getData() {
-      const takePosts = firebase.database().ref('/posted/')
-			  takePosts.once('value', (snapshot)=> {
-			    if(snapshot.val()!==null || snapshot.val() !== this.all) {
-            this.all = snapshot.val()
-            let result = [];
-            for (const key in this.all) {
-              result.unshift(this.all[key]);
-            }
-            this.all = result;
-            this.all.sort(function(a,b){
-              return new Date(b.createdAt) - new Date(a.createdAt);
-            });
-            // this.$store.dispatch('setLoading', false)
-          }
-        })
-      .then( ()=> {
-        this.$store.dispatch('setLoading', false)
-      })
+    resizeUpdate() {
+      if (this.$vuetify.breakpoint.name === 'xs' || this.$vuetify.breakpoint.name === 'sm') {
+        this.$store.dispatch('setMobile', true);
+      } else {
+        this.$store.dispatch('setMobile', false);
+      }
     },
 
     getCurrentUser() {
       firebase.auth().onAuthStateChanged((currentUser) => {
-        if(currentUser !== null) {
-          this.user.email = currentUser.email;
-          this.user.uid = currentUser.uid;
-          this.user.photoURL = currentUser.photoURL;
+        if (currentUser !== null) {
+          this.user = {
+            email: currentUser.email,
+            uid: currentUser.uid,
+            photoURL: currentUser.photoURL
+          };
           this.$store.dispatch('enterSuccess', true);
-          this.$store.dispatch('setOpenSnackbar', true)
-        }else{
-          this.$store.dispatch('enterSuccess', false)
+          this.$store.dispatch('setOpenSnackbar', true);
+        } else {
+          this.$store.dispatch('enterSuccess', false);
         }
-      })
+      });
+    },
+
+    swipe(direction) {
+      if(direction === 'right') {
+        this.$store.dispatch('setDrawer', true);
+      }
     }
   },
 
@@ -206,10 +116,9 @@ methods: {
     });
   },
 
-  mounted(){
+  mounted() {
     this.resizeUpdate();
-    this.getData();
-    this.getCurrentUser()
+    this.getCurrentUser();
   },
 
   computed: {

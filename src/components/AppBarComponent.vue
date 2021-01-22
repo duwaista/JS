@@ -1,53 +1,74 @@
 <template>
-<v-app-bar
-  app
-  dense
-  elevation="2"
-  >
-  <v-app-bar-nav-icon @click.stop="$store.state.drawer = !$store.state.drawer"/>
-  <template>
-    <v-spacer/>
-      <v-toolbar-items v-if="$store.state.enterSuccess">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn v-bind="attrs" v-on="on" icon @click="logoutUser">
-              <v-icon>mdi-logout</v-icon>
-            </v-btn>
-          </template>
-          <span>Выйти</span>
-        </v-tooltip>
-        <v-list-item-avatar v-if="$store.state.user.photoURL">
-          <v-img aspect-ratio="1.0" :src= "$store.state.user.photoURL"/>
-        </v-list-item-avatar>
-      </v-toolbar-items>
-    <v-toolbar-items v-if="!$store.state.enterSuccess">
-      <v-btn class="d-lg-none" text @click.stop="$store.state.inDialog = true"><v-icon>mdi-login</v-icon></v-btn>
-      <v-btn class="d-none d-lg-block" text @click.stop="$store.state.inDialog = true">Sign-in</v-btn>
-      <v-btn class="d-none d-lg-block" text @click.stop="$store.state.upDialog = true">Sign-up</v-btn>
-    </v-toolbar-items>
-  </template>
-</v-app-bar>
+  <div>
+    <v-app-bar
+        app
+        dense
+        elevation="2"
+    >
+      <v-app-bar-nav-icon @click.stop="$store.state.drawer = !$store.state.drawer"/>
+      <template>
+        <v-spacer/>
+        <v-toolbar-items v-if="$store.state.enterSuccess">
+          <v-menu offset-y>
+            <template v-slot:activator="{ on, attrs }">
+              <v-list-item-avatar class="toolbar-container" v-if="$store.state.user.photoURL">
+                <v-btn icon v-bind="attrs" v-on="on">
+                  <v-img aspect-ratio="1.0" :src="$store.state.user.photoURL"/>
+                </v-btn>
+              </v-list-item-avatar>
+            </template>
+            <v-list class="menu-button">
+              <v-list-item class="dropdown-menu">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn v-bind="attrs" v-on="on" icon @click="logoutUser">
+                      <v-icon>mdi-logout</v-icon>
+                    </v-btn>
+                    Выйти
+                  </template>
+                  <span>Выйти</span>
+                </v-tooltip>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-toolbar-items>
+
+        <v-toolbar-items v-if="$store.state.enterSuccess === false && $store.state.mobile === true">
+          <v-btn class="d-lg-none" text @click.stop="$store.state.inDialog = true">
+            <v-icon>mdi-login</v-icon>
+          </v-btn>
+          <v-btn class="d-none d-lg-block" text @click.stop="$store.state.inDialog = true">Sign-in</v-btn>
+          <v-btn class="d-none d-lg-block" text @click.stop="$store.state.upDialog = true">Sign-up</v-btn>
+        </v-toolbar-items>
+
+      </template>
+    </v-app-bar>
+  </div>
 </template>
 
 <script>
-import { firebase } from '@/plugins/firebase'
+import {firebase} from '@/plugins/firebase'
+
+import('@/assets/styles/main.css')
+
 export default {
-    name: "AppBarComponent",
-    methods: {
-        logoutUser() {
-            this.$store.dispatch("enterSuccess", false)
+  name: "AppBarComponent",
+  methods: {
+    async logoutUser() {
+      await firebase.auth().signOut()
+          .then(() => {
+            this.$store.dispatch("enterSuccess", false);
             this.$store.dispatch("setUser", {
-                email: '',
-                uid: '',
-                photoURL: ''
-            })
-            this.userAvatar = ''
-            firebase.auth().signOut().then(function() {
-                
-            }).catch(function(error) {
-                // An error happened.
-            })
-        },
-    }
+              email: '',
+              uid: '',
+              photoURL: ''
+            });
+            this.userAvatar = '';
+          })
+          .catch(function (error) {
+            console.log(error);
+          })
+    },
+  }
 }
 </script>

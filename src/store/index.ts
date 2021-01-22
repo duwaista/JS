@@ -14,6 +14,7 @@ export default new Vuex.Store({
         fullScreenDialog: false,
         enterSuccess: false,
         openSnackbar: false,
+        mobile: Boolean,
 
         auth: {
             email: '',
@@ -28,35 +29,38 @@ export default new Vuex.Store({
 
     mutations: {
         setDark(state, d) {
-            state.dark = d
+            state.dark = d;
         },
         setDrawer(state, r) {
-            state.drawer = r
+            state.drawer = r;
         },
         setUser(state, u) {
-            state.user = u
+            state.user = u;
         },
         enterSuccess(state, s) {
-            state.enterSuccess = s
+            state.enterSuccess = s;
         },
         openInDialog(state, i) {
-            state.inDialog = i
+            state.inDialog = i;
         },
         openUpDialog(state, p) {
-            state.upDialog = p
+            state.upDialog = p;
         },
         setLoading(state, l) {
-            state.loading = l
+            state.loading = l;
         },
         openFullScreenDialog(state, f) {
-            state.fullScreenDialog = f
+            state.fullScreenDialog = f;
         },
         setAuth(state, a) {
-            state.auth.email = a.email,
-            state.auth.password = a.password
+            state.auth.email = a.email;
+            state.auth.password = a.password;
         },
         setOpenSnackbar(state, snackbar) {
-            state.openSnackbar = snackbar
+            state.openSnackbar = snackbar;
+        },
+        setMobile(state, m) {
+            state.mobile = m;
         }
     },
 
@@ -65,25 +69,31 @@ export default new Vuex.Store({
             loading.commit('setLoading', l);
         },
         setDark(dark,d) {
-            dark.commit('setDark', d)
+            dark.commit('setDark', d);
         },
         setUser(user, u) {
-            user.commit('setUser', u)
+            user.commit('setUser', u);
         },
         enterSuccess(enterSuccess , s) {
-            enterSuccess.commit('enterSuccess', s)
+            enterSuccess.commit('enterSuccess', s);
         },
         openInDialog(inDialog, i) {
-            inDialog.commit('openInDialog', i)
+            inDialog.commit('openInDialog', i);
         },
         openUpDialog(upDialog, p) {
-            upDialog.commit('openUpDialog', p)
+            upDialog.commit('openUpDialog', p);
         },
         openFullScreenDialog(fullScreenDialog, f) {
-            fullScreenDialog.commit('openFullScreenDialog', f)
+            fullScreenDialog.commit('openFullScreenDialog', f);
         },
         setOpenSnackbar(openSnackbar, snackbar) {
-            openSnackbar.commit('setOpenSnackbar', snackbar)
+            openSnackbar.commit('setOpenSnackbar', snackbar);
+        },
+        setMobile(mobile, m) {
+            mobile.commit('setMobile', m);
+        },
+        setDrawer(drawer, dr) {
+            drawer.commit('setDrawer', dr);
         },
         authAction(state, auth:{ email: string, password: string}) {
             if(auth.email !== null && auth.password !== null) {
@@ -96,21 +106,22 @@ export default new Vuex.Store({
                             photoURL: response.user.photoURL
                         };
                         this.dispatch('setLoading', false);
-                        this.dispatch("setUser", u).then(()=>{
-                            this.commit('setAuth', {email: '', password: ''})
-                        })
+                        this.dispatch("setUser", u)
+                            .then( () => {
+                                this.commit('setAuth', {email: '', password: ''})
+                            })
                         this.dispatch("openInDialog", false);
                         this.dispatch('enterSuccess', true);
-                        this.dispatch('setOpenSnackbar', true)
+                        this.dispatch('setOpenSnackbar', true);
                     }    
                 })
                 .catch(() => {
                     this.dispatch('enterSuccess', false);
-                    this.dispatch('setLoading', false)
+                    this.dispatch('setLoading', false);
                 })
             }else{
                 this.dispatch('setLoading', false);
-                this.dispatch('enterSuccess', false)
+                this.dispatch('enterSuccess', false);
             }
         }
     }
