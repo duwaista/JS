@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { firebase } from '@/plugins/firebase'
+import axios from "axios";
+
+const url = "https://quiet-ridge-83792.herokuapp.com/api/feed/";
 
 Vue.use(Vuex)
 
@@ -15,6 +18,18 @@ export default new Vuex.Store({
         enterSuccess: false,
         openSnackbar: false,
         mobile: Boolean,
+        bottomMenu: false,
+        deleteProps: {
+            index: 0,
+            feed: [{
+                _id: 0,
+                posts: '',
+                uid: '',
+                email: '',
+                avatarUrl: '',
+                createdAt: '',
+            }]
+        },
 
         auth: {
             email: '',
@@ -25,6 +40,15 @@ export default new Vuex.Store({
             uid: '',
             photoURL: '',
         },
+
+        all: [{
+            _id: 0,
+            posts: '',
+            uid: '',
+            email: '',
+            avatarUrl: '',
+            createdAt: '',
+        }],
     },
 
     mutations: {
@@ -61,6 +85,12 @@ export default new Vuex.Store({
         },
         setMobile(state, m) {
             state.mobile = m;
+        },
+        setBottomMenu(state, bottom) {
+            state.bottomMenu = bottom;
+        },
+        setDeleteProps(state, props) {
+            state.deleteProps = props;
         }
     },
 
@@ -95,6 +125,12 @@ export default new Vuex.Store({
         setDrawer(drawer, dr) {
             drawer.commit('setDrawer', dr);
         },
+        setBottomMenu(bottomMenu, bottom) {
+            bottomMenu.commit('setBottomMenu', bottom);
+        },
+        setDeleteProps(deleteProps, props) {
+            deleteProps.commit('setDeleteProps', props);
+        },
         authAction(state, auth:{ email: string, password: string}) {
             if(auth.email !== null && auth.password !== null) {
                 firebase.auth().signInWithEmailAndPassword(auth.email, auth.password)
@@ -123,6 +159,27 @@ export default new Vuex.Store({
                 this.dispatch('setLoading', false);
                 this.dispatch('enterSuccess', false);
             }
+        },
+        mongoGetData() {
+            axios.get(url)
+                .then((response) => {
+                    this.state.all = response.data;
+                    this.state.all.reverse();
+                    this.dispatch('setLoading', false);
+                })
+                .catch( (err) => {
+                    console.log(err);
+                    this.dispatch('setLoading', false);
+                })
+        },
+        deleteFeed(state, del) {
+            axios.delete(url + del.feed._id)
+                .then(() => {
+                    this.state.all.splice(del.index, 1)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
         }
     }
 })

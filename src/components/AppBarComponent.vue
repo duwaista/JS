@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="header">
     <v-app-bar
         app
         dense
@@ -7,7 +7,7 @@
     >
       <v-app-bar-nav-icon @click.stop="$store.state.drawer = !$store.state.drawer"/>
       <template>
-        <v-spacer/>
+        <v-spacer @click="scrollOnTop()" class="scroll-on-top-header"/>
         <v-toolbar-items v-if="$store.state.enterSuccess">
           <v-menu offset-y>
             <template v-slot:activator="{ on, attrs }">
@@ -33,12 +33,14 @@
           </v-menu>
         </v-toolbar-items>
 
-        <v-toolbar-items v-if="$store.state.enterSuccess === false && $store.state.mobile === true">
-          <v-btn class="d-lg-none" text @click.stop="$store.state.inDialog = true">
+        <v-toolbar-items>
+          <v-btn v-if="$store.state.enterSuccess === false && !$store.state.mobile" class="d-none d-lg-block" text @click.stop="$store.state.inDialog = true">Sign-in</v-btn>
+          <v-btn v-if="$store.state.enterSuccess === false && !$store.state.mobile" class="d-none d-lg-block" text @click.stop="$store.state.upDialog = true">Sign-up</v-btn>
+
+          <v-btn v-if="!$store.state.enterSuccess && $store.state.mobile" class="d-lg-none" text @click.stop="$store.state.inDialog = true">
             <v-icon>mdi-login</v-icon>
           </v-btn>
-          <v-btn class="d-none d-lg-block" text @click.stop="$store.state.inDialog = true">Sign-in</v-btn>
-          <v-btn class="d-none d-lg-block" text @click.stop="$store.state.upDialog = true">Sign-up</v-btn>
+
         </v-toolbar-items>
 
       </template>
@@ -69,6 +71,19 @@ export default {
             console.log(error);
           })
     },
+    scrollOnTop() {
+      window.scroll({
+        top: 0,
+        left: 0,
+      })
+    }
   }
 }
 </script>
+
+<style scoped>
+.scroll-on-top-header {
+  height: 100%;
+  width: 30%;
+}
+</style>

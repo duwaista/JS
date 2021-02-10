@@ -1,6 +1,8 @@
 <template>
   <div>
     <FullScreenDialog :picture=Picture></FullScreenDialog>
+    <BottomMenuComponent>
+    </BottomMenuComponent>
 
     <div v-if="$store.state.enterSuccess" align="center">
       <v-card class="settings" v-bind:class="{ active: isMobile }">
@@ -25,13 +27,13 @@
               {{ feed.email }}
             </v-card-title>
             <v-spacer></v-spacer>
-            <v-tooltip bottom v-if="feed.uid === $store.state.user.uid">
+            <v-tooltip bottom>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn v-bind="attrs" v-on="on" icon @click="mongoDelete(index, feed._id)">
-                  <v-icon>mdi-delete</v-icon>
+                <v-btn v-bind="attrs" v-on="on" icon @click="openBottomMenu(index, feed)">
+                  <v-icon>mdi-dots-vertical</v-icon>
                 </v-btn>
               </template>
-              <span>Удалить</span>
+              <span>Menu</span>
             </v-tooltip>
           </v-list-item>
           <v-img
@@ -51,52 +53,31 @@
 <script>
 import axios from 'axios'
 import FullScreenDialog from "@/components/FullScreenDialog";
+import BottomMenuComponent from "@/components/BottomMenuComponent";
 import ('@/assets/styles/main.css');
 
 export default {
   name: "FeedComponent",
   components: {
-    FullScreenDialog
+    BottomMenuComponent,
+    FullScreenDialog,
   },
   data() {
     return {
-      all: [{
-        id: 0,
-        posts: '',
-        uid: '',
-        email: '',
-        avatarUrl: '',
-        createdAt: '',
-      }],
-
       Picture: '',
       productInput: '',
-      url: ""
+      url: "https://quiet-ridge-83792.herokuapp.com/api/feed/"
     }
   },
   methods: {
-    mongoGetData() {
-      this.all = axios.get(this.url)
-          .then((response) => {
-            this.all = response.data;
-            this.all.reverse();
-            this.$store.dispatch('setLoading', false);
-          })
-          .catch( (err) => {
-            console.log(err);
-            this.$store.dispatch('setLoading', false);
-          })
+    openBottomMenu(index, feed) {
+      this.$store.dispatch('setBottomMenu', true);
+      let temp ={
+        index,
+        feed
+      }
+      this.$store.dispatch('setDeleteProps', temp);
     },
-    mongoDelete(index, _id) {
-      axios.delete(this.url + _id)
-          .then(() => {
-            this.all.splice(index, 1)
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-    },
-
     mongoAddData() {
       this.productInput = document.getElementById("add").value;
       if (this.productInput !== '') {
@@ -110,7 +91,7 @@ export default {
         axios.post(this.url, post)
             .then(() => {
               this.all.unshift(post);
-              this.productInput = ''
+              this.productInput = '';
             })
             .catch((e) => {
               console.log(e)
@@ -119,6 +100,14 @@ export default {
     },
   },
   computed: {
+    all: {
+      get() {
+        return this.$store.state.all
+      },
+      set() {
+        this.$store.dispatch()
+      }
+    },
     isMobile: {
       get() {
         return this.$store.state.mobile;
@@ -129,7 +118,7 @@ export default {
     }
   },
   mounted() {
-    this.mongoGetData();
+    this.$store.dispatch('mongoGetData')
   },
   beforeDestroy() {
     this.all = [{}];

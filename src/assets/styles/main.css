@@ -9,13 +9,11 @@ div.container {
 }
 .settings {
     width: 55%;
-    margin-top: 45px;
     margin-bottom: 10px;
 }
 .active {
     height: 90%;
     width: 97%;
-    margin-bottom: 20px;
 }
 .feed {
     height: 100%;
@@ -26,7 +24,7 @@ div.container {
     width: 97%;
 }
 .feed-container {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 .desPic {
     margin-bottom: 10px;
@@ -35,11 +33,6 @@ div.container {
     cursor: pointer;
 }
 .mobilePic {
-    height: 80%;
-    width: 100%;
-}
-.fix {
-    margin-bottom: 80px;
 }
 .menu-button {
     padding: 0px 0px;
@@ -54,3 +47,43 @@ div.container {
 .v-application--is-ltr .v-list-item__avatar:first-child {
    margin-right: 0px;
 }
+.header {
+    margin-bottom: 36px;
+}
+.mobile-fullscreen-card {
+    display: flex;
+    flex-direction: column;
+    align-content: flex-end;
+    margin-bottom: auto;
+    margin-top: auto;
+    height: 100%;
+}
+.mobile-fullscreen-picture {
+    position: relative;
+    align-self: center;
+    margin-top: auto;
+    margin-bottom: auto;
+    width: 100%;
+}
+.mobile-fullscreen-picture-container {
+    display: flex;
+    align-content: center;
+    height: 100%;
+}
+.mobile-fullscreen-header {
+    position: fixed;
+    z-index: 1;
+    display: flex;
+    width: 100%;
+    align-self: start;
+    align-content: center;
+    height: 56px;
+    background-color: #fff;
+    justify-content: flex-end;
+}
+.close-fullscreen-button {
+    align-self: center;
+    margin-right: 10px;
+}
+
+

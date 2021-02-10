@@ -49,16 +49,7 @@ export default {
       upDialog: false,
       postId: 0,
       Picture: '',
-      openSnackbar: false,
-
-      all: [{
-        id: 0,
-        posts: '',
-        uid: '',
-        email: '',
-        avatarUrl: '',
-        createdAt: '',
-      }]
+      openSnackbar: false
     }
   },
 
