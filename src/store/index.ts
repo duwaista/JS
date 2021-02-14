@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { firebase } from '@/plugins/firebase'
+import {firebase} from '@/plugins/firebase'
 import axios from "axios";
 
 const url = "https://quiet-ridge-83792.herokuapp.com/api/feed/";
@@ -98,13 +98,13 @@ export default new Vuex.Store({
         setLoading(loading, l) {
             loading.commit('setLoading', l);
         },
-        setDark(dark,d) {
+        setDark(dark, d) {
             dark.commit('setDark', d);
         },
         setUser(user, u) {
             user.commit('setUser', u);
         },
-        enterSuccess(enterSuccess , s) {
+        enterSuccess(enterSuccess, s) {
             enterSuccess.commit('enterSuccess', s);
         },
         openInDialog(inDialog, i) {
@@ -131,31 +131,31 @@ export default new Vuex.Store({
         setDeleteProps(deleteProps, props) {
             deleteProps.commit('setDeleteProps', props);
         },
-        authAction(state, auth:{ email: string, password: string}) {
-            if(auth.email !== null && auth.password !== null) {
+        authAction(state, auth: { email: string, password: string }) {
+            if (auth.email !== null && auth.password !== null) {
                 firebase.auth().signInWithEmailAndPassword(auth.email, auth.password)
-                .then( (response) => {
-                    if(response.user !== null) {
-                        let u = {
-                            email: response.user.email,
-                            uid: response.user.uid,
-                            photoURL: response.user.photoURL
-                        };
+                    .then((response) => {
+                        if (response.user !== null) {
+                            let u = {
+                                email: response.user.email,
+                                uid: response.user.uid,
+                                photoURL: response.user.photoURL
+                            };
+                            this.dispatch('setLoading', false);
+                            this.dispatch("setUser", u)
+                                .then(() => {
+                                    this.commit('setAuth', {email: '', password: ''})
+                                })
+                            this.dispatch("openInDialog", false);
+                            this.dispatch('enterSuccess', true);
+                            this.dispatch('setOpenSnackbar', true);
+                        }
+                    })
+                    .catch(() => {
+                        this.dispatch('enterSuccess', false);
                         this.dispatch('setLoading', false);
-                        this.dispatch("setUser", u)
-                            .then( () => {
-                                this.commit('setAuth', {email: '', password: ''})
-                            })
-                        this.dispatch("openInDialog", false);
-                        this.dispatch('enterSuccess', true);
-                        this.dispatch('setOpenSnackbar', true);
-                    }    
-                })
-                .catch(() => {
-                    this.dispatch('enterSuccess', false);
-                    this.dispatch('setLoading', false);
-                })
-            }else{
+                    })
+            } else {
                 this.dispatch('setLoading', false);
                 this.dispatch('enterSuccess', false);
             }
@@ -167,7 +167,7 @@ export default new Vuex.Store({
                     this.state.all.reverse();
                     this.dispatch('setLoading', false);
                 })
-                .catch( (err) => {
+                .catch((err) => {
                     console.log(err);
                     this.dispatch('setLoading', false);
                 })

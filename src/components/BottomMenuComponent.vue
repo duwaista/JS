@@ -40,16 +40,10 @@ export default {
     },
     deleteFeed() {
       this.feedProps = this.$store.state.deleteProps;
-      let prpr = {
-        index: this.feedProps.index,
-        feed: this.feedProps.feed
-      }
-      this.$store.dispatch('deleteFeed', prpr);
+      this.$store.dispatch('deleteFeed', {index: this.feedProps.index, feed: this.feedProps.feed});
     },
     async sharePicture() {
       const shareData = {
-        title: 'MDN',
-        text: 'Share',
         url: this.$store.state.deleteProps.feed.posts
       }
       try {

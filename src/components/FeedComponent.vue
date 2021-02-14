@@ -5,13 +5,20 @@
     </BottomMenuComponent>
 
     <div v-if="$store.state.enterSuccess" align="center">
-      <v-card class="settings" v-bind:class="{ active: isMobile }">
+      <v-card class="settings" :loading="loading" v-bind:class="{ active: isMobile }">
         <form>
-          <input id="add" @keyup.enter="mongoAddData" type="text" :value="productInput" placeholder="URL изображения">
-          <v-btn class="shop-btn" @submit="mongoAddData" @click="mongoAddData">add</v-btn>
+          <v-file-input
+              value="20"
+              placeholder="Click to select file"
+              class="upload-file-input"
+              show-size
+              v-model="file"
+              accept="image/*">
+          </v-file-input>
+          <v-btn @click="addFile()">Done</v-btn>
           <br>
-<!--          <input @keyup.enter="setAvatar" id="setAvatar" autocomplete="none" type="text" :value="userAvatar" placeholder="Set avatar URL">-->
-<!--          <v-btn @click="setAvatar">set</v-btn>-->
+          <!--          <input @keyup.enter="setAvatar" id="setAvatar" autocomplete="none" type="text" :value="userAvatar" placeholder="Set avatar URL">-->
+          <!--          <v-btn @click="setAvatar">set</v-btn>-->
         </form>
       </v-card>
     </div>
@@ -51,9 +58,11 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
+import {storage} from "@/plugins/firebase";
 import FullScreenDialog from "@/components/FullScreenDialog";
 import BottomMenuComponent from "@/components/BottomMenuComponent";
+
 import ('@/assets/styles/main.css');
 
 export default {
@@ -66,38 +75,64 @@ export default {
     return {
       Picture: '',
       productInput: '',
-      url: "https://quiet-ridge-83792.herokuapp.com/api/feed/"
+      url: "https://quiet-ridge-83792.herokuapp.com/api/feed/",
+      file: [],
+      loading: false,
     }
   },
   methods: {
     openBottomMenu(index, feed) {
       this.$store.dispatch('setBottomMenu', true);
-      let temp ={
-        index,
-        feed
-      }
-      this.$store.dispatch('setDeleteProps', temp);
+      this.$store.dispatch('setDeleteProps', {index, feed});
     },
-    mongoAddData() {
-      this.productInput = document.getElementById("add").value;
-      if (this.productInput !== '') {
-        let post = {
-          avatarUrl: this.$store.state.user.photoURL,
-          email: this.$store.state.user.email,
-          uid: this.$store.state.user.uid,
-          posts: this.productInput,
-          createdAt: new Date().toString()
-        }
-        axios.post(this.url, post)
+    mongoAddData(url) {
+      let post = {
+        avatarUrl: this.$store.state.user.photoURL,
+        email: this.$store.state.user.email,
+        uid: this.$store.state.user.uid,
+        posts: url,
+        createdAt: new Date().toString()
+      }
+      axios.post(this.url, post)
+          .then(() => {
+            this.all.unshift(post);
+            this.productInput = '';
+            this.loading = false;
+          })
+          .catch((e) => {
+            console.log(e);
+            this.loading = false;
+          })
+    },
+    addFile() {
+      const maxSize = 5 * 1024 * 1024;
+      this.loading = true;
+      const fileRef = storage.ref();
+      if (this.file.size && this.file.size < maxSize) {
+        let uploadFile = fileRef.child('images/' + this.file.name);
+        uploadFile.put(this.file)
             .then(() => {
-              this.all.unshift(post);
-              this.productInput = '';
+              console.log("Added")
+              uploadFile.getDownloadURL()
+                  .then((url) => {
+                    this.mongoAddData(url);
+                    this.file = [];
+                    uploadFile = [];
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                    this.loading = false;
+                  })
             })
-            .catch((e) => {
-              console.log(e)
+            .catch((err) => {
+              console.log(err);
+              this.loading = false;
             })
+      } else {
+        console.log("You died");
+        this.loading = false;
       }
-    },
+    }
   },
   computed: {
     all: {
@@ -105,7 +140,7 @@ export default {
         return this.$store.state.all
       },
       set() {
-        this.$store.dispatch()
+
       }
     },
     isMobile: {
@@ -128,5 +163,14 @@ export default {
 <style>
 .row {
   margin: 0px;
+}
+
+.file-preview {
+  height: 100px;
+  width: 80px;
+}
+
+.upload-file-input {
+  width: 90%;
 }
 </style>
