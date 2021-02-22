@@ -1,10 +1,10 @@
 <template>
-  <v-card tile flat class="basic-element-bottom-container">
+  <div class="basic-element-bottom-container">
     <v-icon class="basic-element-icon">{{icon}}</v-icon>
     <span>
       {{text}}
     </span>
-  </v-card>
+  </div>
 </template>
 
 <script>

@@ -15,7 +15,7 @@
               v-model="file"
               accept="image/*">
           </v-file-input>
-          <v-btn @click="addFile()">Done</v-btn>
+          <v-btn @click="addFile()">Upload</v-btn>
           <br>
           <!--          <input @keyup.enter="setAvatar" id="setAvatar" autocomplete="none" type="text" :value="userAvatar" placeholder="Set avatar URL">-->
           <!--          <v-btn @click="setAvatar">set</v-btn>-->
@@ -24,35 +24,35 @@
     </div>
 
     <div align="center">
-      <div class="feed-container" v-for="(feed, index) in all" :key="feed.id">
-        <v-card class="feed" v-bind:class="{ mobile: isMobile }" outlined>
-          <v-list-item>
-            <v-list-item-avatar v-if="feed.avatarUrl">
-              <v-img aspect-ratio="1.0" :src="feed.avatarUrl"></v-img>
-            </v-list-item-avatar>
-            <v-card-title>
-              {{ feed.email }}
-            </v-card-title>
-            <v-spacer></v-spacer>
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn v-bind="attrs" v-on="on" icon @click="openBottomMenu(index, feed)">
-                  <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn>
-              </template>
-              <span>Menu</span>
-            </v-tooltip>
-          </v-list-item>
-          <v-img
-              aspect-ratio="1.2"
-              @click.stop="$store.dispatch('openFullScreenDialog', true); Picture = feed.posts"
-              loading="lazy"
-              v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }"
-              :src=feed.posts
-          >
-          </v-img>
-        </v-card>
-      </div>
+      <v-card
+          v-for="(feed, index) in all" :key="feed.id"
+          class="feed"
+          v-bind:class="{ mobile: isMobile }"
+          outlined>
+        <v-list-item>
+          <v-list-item-avatar width="38px" height="38px" v-if="feed.avatarUrl">
+            <img alt="avatar" :src="feed.avatarUrl">
+          </v-list-item-avatar>
+          <v-card-title>
+            {{ feed.email }}
+          </v-card-title>
+          <v-spacer></v-spacer>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-bind="attrs" v-on="on" icon @click.native="openBottomMenu(index, feed)">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <span>Menu</span>
+          </v-tooltip>
+        </v-list-item>
+        <img
+            v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }"
+            loading="lazy"
+            @click.stop="$store.dispatch('openFullScreenDialog', true); Picture = feed.posts"
+            :src=feed.posts
+        >
+      </v-card>
     </div>
   </div>
 </template>
@@ -152,22 +152,46 @@ export default {
       }
     }
   },
-  mounted() {
+  created() {
     this.$store.dispatch('mongoGetData')
-  },
-  beforeDestroy() {
-    this.all = [{}];
   }
 }
 </script>
 <style>
-.row {
-  margin: 0px;
+.v-card__title {
+  padding: 8px;
+  margin-left: 4px;
 }
 
-.file-preview {
-  height: 100px;
-  width: 80px;
+.feed {
+  margin-bottom: 8px;
+}
+.feed .v-application--is-ltr .v-list-item__avatar:first-child {
+  margin-bottom: 4px;
+  margin-top: 4px;
+}
+.feed-container img {
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.desPic {
+  margin-bottom: 10px;
+  height: 100%;
+  width: 98%;
+  cursor: pointer;
+}
+
+.mobilePic {
+  object-fit: cover;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  width: 100%;
+  height: 350px;
+}
+
+.row {
+  margin: 0px;
 }
 
 .upload-file-input {

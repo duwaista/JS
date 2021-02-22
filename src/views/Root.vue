@@ -1,8 +1,5 @@
 <template>
-  <div v-touch="{
-    right: () => swipe('right')
-  }">
-    }
+  <div>
     <!-- Used components: -->
     <AppBarComponent/>
     <SnackbarComponent/>
@@ -91,12 +88,6 @@ export default {
         }
       });
     },
-
-    swipe(direction) {
-      if(direction === 'right') {
-        this.$store.dispatch('setDrawer', true);
-      }
-    }
   },
 
   created() {
@@ -110,6 +101,10 @@ export default {
   mounted() {
     this.resizeUpdate();
     this.getCurrentUser();
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('resize', this.resizeUpdate);
   },
 
   computed: {

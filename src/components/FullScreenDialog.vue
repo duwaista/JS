@@ -2,9 +2,8 @@
   <div>
     <v-dialog
         v-model="$store.state.fullScreenDialog"
-        @input="v => v || $store.dispatch('openFullScreenDialog', false)"
         :fullscreen="$vuetify.breakpoint.mobile"
-        width="70%"
+        max-width="70%"
         height="70%"
     >
       <v-card class="mobile-fullscreen-card" v-if="$vuetify.breakpoint.mobile">
@@ -19,7 +18,7 @@
           </v-btn>
         </v-card>
         <div class="mobile-fullscreen-picture-container">
-          <v-img class="mobile-fullscreen-picture" :src="picture"></v-img>
+          <img alt="picture" loading="lazy" class="mobile-fullscreen-picture" :src="picture"/>
         </div>
 
       </v-card>
