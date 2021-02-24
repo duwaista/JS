@@ -1,3 +1,5 @@
+const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin');
+
 module.exports = {
     runtimeCompiler: true,
     pwa: {
@@ -14,15 +16,9 @@ module.exports = {
                 minSize: 20000,
                 maxSize: 210000,
             }
-        }
-    },
-    chainWebpack: (config) => {
-        const svgRule = config.module.rule('svg');
-
-        svgRule.uses.clear();
-
-        svgRule
-            .use('vue-svg-loader')
-            .loader('vue-svg-loader');
-    },
+        },
+        plugins: [
+            new VuetifyLoaderPlugin()
+        ],
+    }
 }

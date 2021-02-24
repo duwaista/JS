@@ -29,10 +29,7 @@
     </v-dialog>
   </div>
 </template>
-
 <script>
-import ('../assets/styles/main.css');
-
 export default {
   name: 'FullScreenDialog',
   props: {
@@ -43,6 +40,44 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
+.mobile-fullscreen-card {
+  display: flex;
+  flex-direction: column;
+  align-content: flex-end;
+  margin-bottom: auto;
+  margin-top: auto;
+  height: 100%;
+}
 
+.mobile-fullscreen-picture {
+  position: relative;
+  align-self: center;
+  margin-top: auto;
+  margin-bottom: auto;
+  width: 100%;
+}
+
+.mobile-fullscreen-picture-container {
+  display: flex;
+  align-content: center;
+  height: 100%;
+}
+
+.mobile-fullscreen-header {
+  position: fixed;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  align-self: start;
+  align-content: center;
+  height: 56px;
+  background-color: #fff;
+  justify-content: flex-end;
+}
+
+.close-fullscreen-button {
+  align-self: center;
+  margin-right: 10px;
+}
 </style>

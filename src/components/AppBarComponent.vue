@@ -32,17 +32,29 @@
             </v-list>
           </v-menu>
         </v-toolbar-items>
-
         <v-toolbar-items>
-          <v-btn v-if="$store.state.enterSuccess === false && !$store.state.mobile" class="d-none d-lg-block" text @click.stop="$store.state.inDialog = true">Sign-in</v-btn>
-          <v-btn v-if="$store.state.enterSuccess === false && !$store.state.mobile" class="d-none d-lg-block" text @click.stop="$store.state.upDialog = true">Sign-up</v-btn>
-
-          <v-btn v-if="!$store.state.enterSuccess && $store.state.mobile" class="d-lg-none" text @click.stop="$store.state.inDialog = true">
+          <v-btn
+              v-if="$store.state.enterSuccess === false && !$store.state.mobile"
+              class="d-none d-lg-block"
+              text
+              @click.stop="$store.state.inDialog = true">
+            Sign-in
+          </v-btn>
+          <v-btn
+              v-if="$store.state.enterSuccess === false && !$store.state.mobile"
+              class="d-none d-lg-block"
+              text
+              @click.stop="$store.state.upDialog = true">
+            Sign-up
+          </v-btn>
+          <v-btn
+              v-if="!$store.state.enterSuccess && $store.state.mobile"
+              class="d-lg-none"
+              text
+              @click.stop="$store.state.inDialog = true">
             <v-icon>mdi-login</v-icon>
           </v-btn>
-
         </v-toolbar-items>
-
       </template>
     </v-app-bar>
   </div>
@@ -50,8 +62,6 @@
 
 <script>
 import {firebase} from '@/plugins/firebase'
-
-import('@/assets/styles/main.css')
 
 export default {
   name: "AppBarComponent",
@@ -82,8 +92,29 @@ export default {
 </script>
 
 <style scoped>
+.v-application--is-ltr .v-list-item__avatar:first-child {
+  margin-right: 0;
+}
+
+.toolbar-container {
+  margin-right: 0;
+}
+
 .scroll-on-top-header {
   height: 100%;
   width: 30%;
+}
+
+.dropdown-menu {
+  padding: 0 8px;
+}
+
+.header {
+  margin-bottom: 54px;
+}
+
+.menu-button {
+  padding: 0 0;
+  margin: 0;
 }
 </style>

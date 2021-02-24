@@ -47,6 +47,7 @@
           </v-tooltip>
         </v-list-item>
         <img
+            :alt=feed.posts
             v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }"
             loading="lazy"
             @click.stop="$store.dispatch('openFullScreenDialog', true); Picture = feed.posts"
@@ -63,8 +64,6 @@ import {storage} from "@/plugins/firebase";
 import FullScreenDialog from "@/components/FullScreenDialog";
 import BottomMenuComponent from "@/components/BottomMenuComponent";
 
-import ('@/assets/styles/main.css');
-
 export default {
   name: "FeedComponent",
   components: {
@@ -74,7 +73,6 @@ export default {
   data() {
     return {
       Picture: '',
-      productInput: '',
       url: "https://quiet-ridge-83792.herokuapp.com/api/feed/",
       file: [],
       loading: false,
@@ -96,7 +94,6 @@ export default {
       axios.post(this.url, post)
           .then(() => {
             this.all.unshift(post);
-            this.productInput = '';
             this.loading = false;
           })
           .catch((e) => {
@@ -108,6 +105,7 @@ export default {
       const maxSize = 5 * 1024 * 1024;
       this.loading = true;
       const fileRef = storage.ref();
+
       if (this.file.size && this.file.size < maxSize) {
         let uploadFile = fileRef.child('images/' + this.file.name);
         uploadFile.put(this.file)
@@ -153,11 +151,21 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('mongoGetData')
+    this.$store.dispatch('mongoGetData');
   }
 }
 </script>
-<style>
+<style scoped>
+.settings {
+  width: 55%;
+  margin-bottom: 8px;
+}
+
+.active {
+  height: 90%;
+  width: 97%;
+}
+
 .v-card__title {
   padding: 8px;
   margin-left: 4px;
@@ -165,14 +173,22 @@ export default {
 
 .feed {
   margin-bottom: 8px;
+  height: 100%;
+  width: 55%;
 }
+
 .feed .v-application--is-ltr .v-list-item__avatar:first-child {
   margin-bottom: 4px;
   margin-top: 4px;
 }
+
 .feed-container img {
   padding: 0;
   margin-bottom: 0;
+}
+
+.v-application--is-ltr .v-list-item__avatar:first-child {
+  margin-right: 0;
 }
 
 .desPic {
@@ -190,11 +206,12 @@ export default {
   height: 350px;
 }
 
-.row {
-  margin: 0px;
-}
-
 .upload-file-input {
   width: 90%;
+}
+
+.mobile {
+  height: 90%;
+  width: 97%;
 }
 </style>

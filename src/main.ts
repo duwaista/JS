@@ -1,20 +1,17 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
-import Vuetify from 'vuetify'
-import 'vuetify/dist/vuetify.min.css'
-import store from './store'
-import './registerServiceWorker'
+import Vue from 'vue';
+import App from './App.vue';
+import router from './router';
+import store from './store';
+import './registerServiceWorker';
+import vuetify from './plugins/vuetify';
 
-Vue.use(Vuetify)
-const vuetifyOptions = { }
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 new Vue({
   el: '#app',
   router,
   store,
+  vuetify,
   components: { App },
   template: '<App/>',
-  vuetify: new Vuetify(vuetifyOptions),
 })

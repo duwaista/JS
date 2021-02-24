@@ -7,7 +7,6 @@
     <SignInDialog/>
     <SignUpDialog v-if="$store.state.upDialog"/>
 
-
     <div v-if="$store.state.loading" align="center">
       <v-progress-circular color="primary" :indeterminate="true"></v-progress-circular>
     </div>
@@ -21,13 +20,12 @@
 <script>
 import {firebase} from '@/plugins/firebase'
 import AppBarComponent from '@/components/AppBarComponent.vue'
-import DrawerComponent from '@/components/Drawer.vue'
 import SnackbarComponent from "@/components/SnackbarComponent";
-import '@/assets/styles/main.css';
 import FeedComponent from "@/components/FeedComponent";
 
 const SignInDialog = () => import('@/components/SignInDialog');
 const SignUpDialog = () => import('@/components/SignUpDialog.vue');
+const DrawerComponent = () => import('@/components/Drawer.vue');
 
 export default {
   components: {
@@ -136,4 +134,8 @@ export default {
   }
 }
 </script>
-
+<style scoped>
+.row {
+  margin: 0;
+}
+</style>

@@ -1,6 +1,6 @@
 {
   "name": "singular",
-  "version": "0.4.1",
+  "version": "0.4.3",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -9,25 +9,26 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "core-js": "^3.8.2",
     "firebase": "^8.2.2",
     "register-service-worker": "^1.7.2",
     "vue": "^2.6.12",
     "vue-router": "^3.4.9",
-    "vue-svg-loader": "^0.16.0",
-    "vuetify": "^2.4.2",
+    "vuetify-loader": "^1.7.2",
     "vuex": "^3.6.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-pwa": "^4.5.6",
+    "@vue/cli-plugin-pwa": "^4.5.11",
     "@vue/cli-plugin-typescript": "^4.5.6",
     "@vue/cli-service": "^4.4.6",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
-    "typescript": "~3.9.3",
+    "sass": "^1.32.8",
+    "sass-loader": "^10.1.1",
+    "typescript": "^3.9.9",
     "vue-template-compiler": "^2.6.12",
-    "webpack": "^4.43.0",
-    "webpack-dev-server": "^3.11.1"
+    "vuetify": "^2.4.2",
+    "webpack-dev-server": "^3.11.2",
+    "webpack": "^4.46.0"
   }
 }
