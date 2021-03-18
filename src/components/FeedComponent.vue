@@ -109,11 +109,10 @@ export default {
       if (this.file.size && this.file.size < maxSize) {
         let uploadFile = fileRef.child('images/' + this.file.name);
         uploadFile.put(this.file)
-            .then(() => {
-              console.log("Added")
+            .then( () => {
               uploadFile.getDownloadURL()
-                  .then((url) => {
-                    this.mongoAddData(url);
+                  .then( async (url) => {
+                    await this.mongoAddData(url);
                     this.file = [];
                     uploadFile = [];
                   })
@@ -157,7 +156,7 @@ export default {
 </script>
 <style scoped>
 .settings {
-  width: 55%;
+  width: 48%;
   margin-bottom: 8px;
 }
 
@@ -174,7 +173,7 @@ export default {
 .feed {
   margin-bottom: 8px;
   height: 100%;
-  width: 55%;
+  width: 48%;
 }
 
 .feed .v-application--is-ltr .v-list-item__avatar:first-child {
@@ -192,10 +191,11 @@ export default {
 }
 
 .desPic {
-  margin-bottom: 10px;
   height: 100%;
-  width: 98%;
+  width: 99%;
   cursor: pointer;
+  max-height: 400px;
+  object-fit: cover;
 }
 
 .mobilePic {
@@ -203,7 +203,8 @@ export default {
   margin-bottom: 0;
   padding-bottom: 0;
   width: 100%;
-  height: 350px;
+  min-height: 260px;
+  max-height: 320px;
 }
 
 .upload-file-input {

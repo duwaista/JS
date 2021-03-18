@@ -72,7 +72,6 @@ export default {
   align-self: start;
   align-content: center;
   height: 56px;
-  background-color: #fff;
   justify-content: flex-end;
 }
 
