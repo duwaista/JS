@@ -1,37 +1,42 @@
 <template>
   <div>
-    <FullScreenDialog :picture=Picture></FullScreenDialog>
-    <BottomMenuComponent>
-    </BottomMenuComponent>
+    <FullScreenDialog :picture="Picture"></FullScreenDialog>
+    <BottomMenuComponent> </BottomMenuComponent>
 
     <div v-if="$store.state.enterSuccess" align="center">
-      <v-card class="settings" :loading="loading" v-bind:class="{ active: isMobile }">
+      <v-card
+        class="settings"
+        :loading="loading"
+        v-bind:class="{ active: isMobile }"
+      >
         <form>
           <v-file-input
-              value="20"
-              placeholder="Click to select file"
-              class="upload-file-input"
-              show-size
-              v-model="file"
-              accept="image/*">
+            value="20"
+            placeholder="Click to select file (still only pics)"
+            class="upload-file-input"
+            show-size
+            v-model="file"
+            accept="image/*"
+          >
           </v-file-input>
           <v-btn @click="addFile()">Upload</v-btn>
-          <br>
-          <!--          <input @keyup.enter="setAvatar" id="setAvatar" autocomplete="none" type="text" :value="userAvatar" placeholder="Set avatar URL">-->
-          <!--          <v-btn @click="setAvatar">set</v-btn>-->
+          <br/>
         </form>
       </v-card>
     </div>
 
     <div align="center">
       <v-card
-          v-for="(feed, index) in all" :key="feed.id"
-          class="feed"
-          v-bind:class="{ mobile: isMobile }"
-          outlined>
+        v-for="(feed, index) in all"
+        :key="feed.id"
+        class="feed"
+        v-bind:class="{ mobile: isMobile }"
+        outlined
+      >
         <v-list-item>
-          <v-list-item-avatar width="38px" height="38px" v-if="feed.avatarUrl">
-            <img alt="avatar" :src="feed.avatarUrl">
+          <v-list-item-avatar width="38px" height="38px">
+            <img v-if="feed.avatarUrl" alt="avatar" :src="feed.avatarUrl" />
+            <v-icon v-else>mdi-account-circle-outline</v-icon>
           </v-list-item-avatar>
           <v-card-title>
             {{ feed.email }}
@@ -39,28 +44,43 @@
           <v-spacer></v-spacer>
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs" v-on="on" icon @click.native="openBottomMenu(index, feed)">
+              <v-btn
+                v-bind="attrs"
+                v-on="on"
+                icon
+                @click.native="openBottomMenu(index, feed)"
+              >
                 <v-icon>mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
             <span>Menu</span>
           </v-tooltip>
         </v-list-item>
+        <video
+          v-bind:class="{ desPic: !isMobile, mobilePic: isMobile }"
+          v-if="feed.type === 'video'"
+          :src=feed.posts
+          preload="none"
+          controls
+        ></video>
         <img
-            :alt=feed.posts
-            v-bind:class="{ desPic: !isMobile , mobilePic: isMobile }"
-            loading="lazy"
-            @click.stop="$store.dispatch('openFullScreenDialog', true); Picture = feed.posts"
-            :src=feed.posts
-        >
+          v-else
+          :alt="feed.posts"
+          v-bind:class="{ desPic: !isMobile, mobilePic: isMobile }"
+          loading="lazy"
+          @click.stop="
+            $store.dispatch('openFullScreenDialog', true);
+            Picture = feed.posts;"
+          :src="feed.posts"
+        />
       </v-card>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
-import {storage} from "@/plugins/firebase";
+import axios from "axios";
+import { storage } from "@/plugins/firebase";
 import FullScreenDialog from "@/components/FullScreenDialog";
 import BottomMenuComponent from "@/components/BottomMenuComponent";
 
@@ -72,16 +92,16 @@ export default {
   },
   data() {
     return {
-      Picture: '',
+      Picture: "",
       url: "https://quiet-ridge-83792.herokuapp.com/api/feed/",
       file: [],
       loading: false,
-    }
+    };
   },
   methods: {
     openBottomMenu(index, feed) {
-      this.$store.dispatch('setBottomMenu', true);
-      this.$store.dispatch('setDeleteProps', {index, feed});
+      this.$store.dispatch("setBottomMenu", true);
+      this.$store.dispatch("setDeleteProps", { index, feed });
     },
     mongoAddData(url) {
       let post = {
@@ -89,17 +109,18 @@ export default {
         email: this.$store.state.user.email,
         uid: this.$store.state.user.uid,
         posts: url,
-        createdAt: new Date().toString()
-      }
-      axios.post(this.url, post)
-          .then(() => {
-            this.all.unshift(post);
-            this.loading = false;
-          })
-          .catch((e) => {
-            console.log(e);
-            this.loading = false;
-          })
+        createdAt: new Date().toString(),
+      };
+      axios
+        .post(this.url, post)
+        .then(() => {
+          this.all.unshift(post);
+          this.loading = false;
+        })
+        .catch((e) => {
+          console.log(e);
+          this.loading = false;
+        });
     },
     addFile() {
       const maxSize = 5 * 1024 * 1024;
@@ -107,52 +128,52 @@ export default {
       const fileRef = storage.ref();
 
       if (this.file.size && this.file.size < maxSize) {
-        let uploadFile = fileRef.child('images/' + this.file.name);
-        uploadFile.put(this.file)
-            .then( () => {
-              uploadFile.getDownloadURL()
-                  .then( async (url) => {
-                    await this.mongoAddData(url);
-                    this.file = [];
-                    uploadFile = [];
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                    this.loading = false;
-                  })
-            })
-            .catch((err) => {
-              console.log(err);
-              this.loading = false;
-            })
+        let uploadFile = fileRef.child("images/" + this.file.name);
+        uploadFile
+          .put(this.file)
+          .then(() => {
+            uploadFile
+              .getDownloadURL()
+              .then(async (url) => {
+                await this.mongoAddData(url);
+                this.file = [];
+                uploadFile = [];
+              })
+              .catch((err) => {
+                console.log(err);
+                this.loading = false;
+              });
+          })
+          .catch((err) => {
+            console.log(err);
+            this.loading = false;
+          });
       } else {
         console.log("You died");
         this.loading = false;
       }
-    }
+    },
   },
   computed: {
     all: {
       get() {
-        return this.$store.state.all
+        return this.$store.state.all;
       },
-      set() {
-
-      }
+      set() {},
     },
     isMobile: {
       get() {
         return this.$store.state.mobile;
       },
       set(m) {
-        this.$store.dispatch('setMobile', m);
-      }
-    }
+        this.$store.dispatch("setMobile", m);
+      },
+    },
   },
   created() {
-    this.$store.dispatch('mongoGetData');
-  }
-}
+    this.$store.dispatch("mongoGetData");
+  },
+};
 </script>
 <style scoped>
 .settings {
